@@ -25,9 +25,24 @@
 /*.zip
 /plugin.xml
 
+# gradle directory
+/.gradle
+
 # older plugin install locations
 /plugins
 /web-app/plugins
 
 # "temporary" build files
 /target
+/build
+
+# Ignore Intellij IDEA files
+/.idea
+.idea
+*.iml
+
+# Ignore build artifacts
+target
+
+# Ignore packaged plugins
+*.zip
