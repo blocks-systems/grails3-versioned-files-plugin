@@ -162,17 +162,19 @@ class AttachmentableService {
         return attachment
     }
 
-    def remove(Map params=[:]) {
+    def moveToTrash(Map params=[:]) {
         if (!params.attachmentId) {
             return
         }
-        Attachment attachment = Attachment.get(attachmentId)
+        Attachment attachment = Attachment.get(params.attachmentId)
         if (!attachment) {
             return
         }
-        FileRepo.remove(params)
+        params.bucket = params.bucket ?: attachment.bucket
+        params.version = params.version ?: attachment.version
+        boolean  ret = FileRepo.moveToTrash(params)
         attachment.isDeleted = true
         attachment.save flush:true
-        attachment
+        ret
     }
 }

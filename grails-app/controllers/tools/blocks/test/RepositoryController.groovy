@@ -8,6 +8,8 @@ import javax.servlet.http.HttpServletResponse
 import java.nio.file.Files
 import java.nio.file.Path
 
+import static org.springframework.http.HttpStatus.OK
+
 class RepositoryController {
 
     def attachmentableService
@@ -84,15 +86,26 @@ class RepositoryController {
     }
 
     def moveToTrash() {
+        boolean res = false
         if (params.attachmentId) {
-            Attachment attachment = Attachment.get(params.attachmentId)
-            params.version = attachment.version
-            params.bucket = attachment.bucket
-            if (attachmentableService.remove(params)) {
+            //Attachment attachment = Attachment.get(params.attachmentId)
+            //params.version = attachment.version
+            //params.bucket = attachment.bucket
+            res = attachmentableService.moveToTrash(params)
+            /*if (attachmentableService.remove(params)) {
 
-            }
+            }*/
         }
-
-        redirect action:"index", method:"GET"
+        if (res) {
+            request.withFormat {
+                form multipartForm {
+                    flash.message = message(code: 'default.attachment.delete.success', default: 'Attachment deleted successfully')
+                    redirect action: 'index'
+                }
+                '*' { redirect action: 'index' }
+            }
+        } else {
+            render message(code: 'error.attachment.delete', default:'Error while deleting attachment')
+        }
     }
 }

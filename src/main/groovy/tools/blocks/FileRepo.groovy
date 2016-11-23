@@ -5,6 +5,7 @@ import org.apache.commons.logging.LogFactory
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
 import tools.blocks.exceptions.UnavailableFileSystemException
 
+import java.nio.file.CopyOption
 import java.nio.file.Files
 import java.nio.file.OpenOption
 import java.nio.file.Path
@@ -111,7 +112,10 @@ class FileRepo {
      * @param params - bucket, last version and id of attachment
      * @return true if succeed, otherwise false
      */
-    protected static def remove(Map params) {
+    protected static def moveToTrash(Map params) {
+        if (!isInitialized()) {
+            init()
+        }
         boolean ret = false
         if (params.attachmentId && params.bucket) {
             Path filePath = Paths.get(repoDir.toString(), params.bucket)
@@ -120,7 +124,7 @@ class FileRepo {
             }
             Long lastVersion = params.version ?: 0
             for (int i = 0; i <= lastVersion.intValue(); i++) {
-                ret = ret || removeFile(params.attachmentId, lastVersion, filePath)
+                ret = ret | moveFileToTrash(params.attachmentId, i, filePath)
             }
         }
         ret
@@ -151,17 +155,30 @@ class FileRepo {
         file.toFile().length()
     }
 
+    private static boolean moveFileToTrash(def id, def version, Path filePath) {
+        moveFile(id, version, filePath, trashDir)
+    }
+
+
     /**
      * Method for move files to trash directory
      * @param id
      * @param version
      * @param filePath
+     * @param targetPath
      * @return
      */
-    private static boolean removeFile(def id, def version, Path filePath) {
+    private static boolean moveFile(def id, def version, Path filePath, Path targetPath) {
+        boolean moved = false
         String diskFileName = "${id}" + VERSION_SEPARTOR + "${version}"
         Path file = Paths.get(filePath.toString(), diskFileName)
-        Files.move()
-        //Files.deleteIfExists(file)
+        Path destinationFile  = Paths.get(targetPath.toString(), diskFileName)
+        try {
+            Files.move(file, destinationFile)
+            moved = true
+        } catch (IOException e) {
+            log.info(e.stackTrace)
+        }
+        moved
     }
 }
