@@ -177,4 +177,8 @@ class AttachmentableService {
         attachment.save flush:true
         ret
     }
+
+    def emptyTrash() {
+        FileRepo.emptyTrash()
+    }
 }

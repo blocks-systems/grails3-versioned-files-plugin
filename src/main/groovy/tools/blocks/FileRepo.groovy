@@ -2,12 +2,9 @@ package tools.blocks
 
 import grails.util.Holders
 import org.apache.commons.logging.LogFactory
-import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
 import tools.blocks.exceptions.UnavailableFileSystemException
 
-import java.nio.file.CopyOption
 import java.nio.file.Files
-import java.nio.file.OpenOption
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
@@ -180,5 +177,31 @@ class FileRepo {
             log.info(e.stackTrace)
         }
         moved
+    }
+
+    /**
+     * Method to clear the trash bin
+     * @return true if operation success, false otherwise
+     */
+    protected static boolean  emptyTrash() {
+        boolean ret = false
+        Files.walk(trashDir).forEach(
+                {
+                    it->
+                        if (it != trashDir) {
+                            ret = ret & removeFile(it.toAbsolutePath())
+                        }
+                }
+        )
+        ret
+    }
+
+    /**
+     * Method removes file
+     * @param filePath
+     * @return true if operation success, false otherwise
+     */
+    private static boolean removeFile(Path filePath) {
+        Files.deleteIfExists(filePath)
     }
 }
