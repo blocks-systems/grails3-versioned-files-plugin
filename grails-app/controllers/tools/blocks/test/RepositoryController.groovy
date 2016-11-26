@@ -1,46 +1,42 @@
 package tools.blocks.test
 
 import grails.converters.JSON
-
-import tools.blocks.Attachment
+import tools.blocks.Annex
 
 import javax.servlet.http.HttpServletResponse
 import java.nio.file.Files
-import java.nio.file.Path
-
-import static org.springframework.http.HttpStatus.OK
 
 class RepositoryController {
 
-    def attachmentableService
+    def annexableService
 
     def index() {
-        def buckets = attachmentableService.attachmentsGroupByBucket
-        respond Attachment.list(params), model:[buckets: buckets]
+        def buckets = annexableService.annexesGroupByBucket
+        respond Annex.list(params), model:[buckets: buckets]
     }
 
-    def getAttachmentInfo(Long attachmentId, String fileName, String bucket) {
-        def data = attachmentableService.getAttachmentInfo(attachmentId, fileName, bucket)
+    def getAttachmentInfo(Long annexId, String fileName, String bucket) {
+        def data = annexableService.getAnnexInfo(annexId, fileName, bucket)
         render data as JSON
     }
 
-    def downloadAttachmentFile() {
-        Attachment attachment = Attachment.get(params.attachmentId)
-        def file = attachmentableService.downloadAttachmentFile(attachment, params.versionToDownload as Long)
+    def downloadAnnexFile() {
+        Annex annex = Annex.get(params.annexId)
+        def file = annexableService.downloadAnnexFile(annex, params.versionToDownload as Long)
         if (file != null) {
-            String filename = attachment.fileName
-            if (attachment.extension) {
-                filename += "." + attachment.extension
+            String filename = annex.fileName
+            if (annex.extension) {
+                filename += "." + annex.extension
             }
 
-            ['Content-disposition': "${params.containsKey('inline') ? 'inline' : 'attachment'};filename=\"$filename\"",
+            ['Content-disposition': "${params.containsKey('inline') ? 'inline' : 'annex'};filename=\"$filename\"",
              'Cache-Control': 'private',
              'Pragma': ''].each {k, v ->
                 response.setHeader(k, v)
             }
 
             if (params.containsKey('withContentType')) {
-                response.contentType = attachment.contentType
+                response.contentType = annex.contentType
             } else {
                 response.contentType = 'application/octet-stream'
             }
@@ -58,28 +54,28 @@ class RepositoryController {
         response.status = HttpServletResponse.SC_NOT_FOUND
     }
 
-    def uploadAttachment() {
+    def uploadAnnex() {
         if (params.uploadFile) {//OK, file uploaded
-            Attachment attachment
+            Annex annex
             //params.bucket = params.bucket ?: 'common'
-            if (params.uploadAttachmentId) {//OK, attachment id is set
-                attachment = Attachment.get(params.uploadAttachmentId)
-                attachment.file = params.uploadFile
-                attachment.fileName = params.uploadFile.filename
-                if (attachment.fileName.contains('.')) {
-                    int idx = attachment.fileName.lastIndexOf('.')
-                    attachment.extension = attachment.fileName.substring(idx+1, attachment.fileName.length())
+            if (params.uploadAnnexId) {//OK, annex id is set
+                annex = Annex.get(params.uploadAnnexId)
+                annex.file = params.uploadFile
+                annex.fileName = params.uploadFile.filename
+                if (annex.fileName.contains('.')) {
+                    int idx = annex.fileName.lastIndexOf('.')
+                    annex.extension = annex.fileName.substring(idx+1, annex.fileName.length())
                 }
                 //ADD CONTENT TYPE FROM Apache Tika
 
-            } /*else {//create new attachment
-                def attachments =  Attachment.findAllByFileName(params.uploadFile.filename)
+            } /*else {//create new annex
+                def attachments =  Annex.findAllByFileName(params.uploadFile.filename)
                 if (attachments && !attachments.empty) {
                 }
             }*/
-            attachment.save flush:true//must be saved for new version of domain object
-            attachment = attachmentableService.add(attachment)
-            attachment.save flush:true//size and content type could be changed
+            annex.save flush:true//must be saved for new version of domain object
+            annex = annexableService.add(annex)
+            annex.save flush:true//size and content type could be changed
             redirect action:"index", method:"GET"
         }
         response.status = HttpServletResponse.SC_NO_CONTENT
@@ -88,24 +84,24 @@ class RepositoryController {
     def moveToTrash() {
         boolean res = false
         if (params.attachmentId) {
-            //Attachment attachment = Attachment.get(params.attachmentId)
-            //params.version = attachment.version
-            //params.bucket = attachment.bucket
-            res = attachmentableService.moveToTrash(params)
-            /*if (attachmentableService.remove(params)) {
+            //Annex annex = Annex.get(params.attachmentId)
+            //params.version = annex.version
+            //params.bucket = annex.bucket
+            res = annexableService.moveToTrash(params)
+            /*if (annexableService.remove(params)) {
 
             }*/
         }
         if (res) {
             request.withFormat {
                 form multipartForm {
-                    flash.message = message(code: 'default.attachment.delete.success', default: 'Attachment deleted successfully')
+                    flash.message = message(code: 'default.annex.delete.success', default: 'Annex deleted successfully')
                     redirect action: 'index'
                 }
                 '*' { redirect action: 'index' }
             }
         } else {
-            render message(code: 'error.attachment.delete', default:'Error while deleting attachment')
+            render message(code: 'error.annex.delete', default:'Error while deleting annex')
         }
     }
 }

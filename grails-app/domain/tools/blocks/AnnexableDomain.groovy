@@ -1,15 +1,15 @@
 package tools.blocks
 
-class LinkAttachment {
+class AnnexableDomain {
 
-    Attachment attachment
+    Annex annex
     String domainName
     Long domainId
 
-    static belongsTo = [attachment: Attachment]
+    static belongsTo = [annex: Annex]
 
     static constraints = {
-        attachment nullable: false
+        annex nullable: false
         domainName nullable: false
         domainId nullable: false
     }

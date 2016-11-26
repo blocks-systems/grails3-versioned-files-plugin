@@ -59,54 +59,54 @@ class FileRepo {
 
     /**
      *
-     * @param attachment Attachment data to upload
-     * @param params map of params like version, attachment, bucket or file.
-     * If not present data will should exists in attachment object
-     * @return changed attachment object
+     * @param annex Annex data to upload
+     * @param params map of params like version, annex, bucket or file.
+     * If not present data will should exists in annex object
+     * @return changed annex object
      */
-    protected static def uploadFile(Attachment attachment, Map params=[:]) {
+    protected static def uploadFile(Annex annex, Map params=[:]) {
         if (!isInitialized()) {
             init()
         }
-        params.version = params.version ?: attachment.version
-        params.bucket = params.bucket ?: attachment.bucket
-        params.attachmentId = params.attachmentId ?: attachment.id
-        params.file = params.file ?: attachment.file
-        attachment.contentType = params.file.contentType
+        params.version = params.version ?: annex.version
+        params.bucket = params.bucket ?: annex.bucket
+        params.annexId = params.annexId ?: annex.id
+        params.file = params.file ?: annex.file
+        annex.contentType = params.file.contentType
         Long fileSize = saveFileToRepo(params)
-        attachment.length = fileSize
-        attachment
+        annex.length = fileSize
+        annex
     }
 
     /**
-     *  Method for get/download attachment file
-     * @param attachment
+     *  Method for get/download annex file
+     * @param annex
      * @param params Additionals parameters like versionToDownload
      * If not set latest version will be downloaded
      * @return File from disk
      */
-    protected static def getFile(Attachment attachment, Map params=[:]) {
+    protected static def getFile(Annex annex, Map params=[:]) {
         if (!isInitialized()) {
             init()
         }
-        Long versionToDownload = params.versionToDownload ?: attachment.version
-        Path filePath = Paths.get(repoDir.toString(), attachment.bucket)
+        Long versionToDownload = params.versionToDownload ?: annex.version
+        Path filePath = Paths.get(repoDir.toString(), annex.bucket)
         if (Files.notExists(filePath)) {
             filePath = Files.createDirectory(filePath)
         }
-        String diskFileName = "${attachment.id}" + VERSION_SEPARTOR + "${versionToDownload}"
+        String diskFileName = "${annex.id}" + VERSION_SEPARTOR + "${versionToDownload}"
         /////
         Path file = Paths.get(filePath.toString(), diskFileName)
         if (Files.notExists(file)) {
             throw new Exception("File not found")
         }
-        attachment.file = file
+        annex.file = file
         file
     }
 
     /**
      *  Method move files to trash directory
-     * @param params - bucket, last version and id of attachment
+     * @param params - bucket, last version and id of annex
      * @return true if succeed, otherwise false
      */
     protected static def moveToTrash(Map params) {
@@ -114,14 +114,14 @@ class FileRepo {
             init()
         }
         boolean ret = false
-        if (params.attachmentId && params.bucket) {
+        if (params.annexId && params.bucket) {
             Path filePath = Paths.get(repoDir.toString(), params.bucket)
             if (Files.notExists(filePath)) {
                 return false
             }
             Long lastVersion = params.version ?: 0
             for (int i = 0; i <= lastVersion.intValue(); i++) {
-                ret = ret | moveFileToTrash(params.attachmentId, i, filePath)
+                ret = ret | moveFileToTrash(params.annexId, i, filePath)
             }
         }
         ret
@@ -129,12 +129,12 @@ class FileRepo {
 
     /**
      * Methods to writes file to disk
-     * @param params like file, bucket, attachment id and version
+     * @param params like file, bucket, annex id and version
      * param file must be a StandardMultipartFile type
      * @return size of the file
      */
     private static Long saveFileToRepo(Map params) {
-        String diskFileName = "${params.attachmentId}" + VERSION_SEPARTOR + "${params.version}"
+        String diskFileName = "${params.annexId}" + VERSION_SEPARTOR + "${params.version}"
         Path filePath = Paths.get(repoDir.toString(), params.bucket)
         if (Files.notExists(filePath)) {
             filePath = Files.createDirectory(filePath)

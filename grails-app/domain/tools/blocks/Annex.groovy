@@ -1,6 +1,6 @@
 package tools.blocks
 
-class Attachment {
+class Annex {
 
     String createdBy = 'SYSTEM'
     Date createdAt = new Date()
@@ -14,7 +14,7 @@ class Attachment {
     Long length = 0
     def file
 
-    static hasMany = [linkAttachments: LinkAttachment]
+    static hasMany = [annexableDomains: AnnexableDomain]
 
     static transients = ['file']
 
@@ -27,7 +27,7 @@ class Attachment {
         fileName nullable: false
         extension nullable: true
         bucket nullable: true
-        linkAttachments nullable: true
+        annexableDomains nullable: true
         contentType nullable: true
         length nullable: true
     }

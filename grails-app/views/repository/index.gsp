@@ -5,28 +5,103 @@
     <title>Welcome to Grails</title>
 
     <asset:link rel="icon" href="favicon.ico" type="image/x-ico" />
-    %{--<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>--}%
-
-    <asset:stylesheet src="style.css"></asset:stylesheet>
     <script type="text/javascript" src="/assets/jquery-2.2.0.min.js?compile=false"></script>
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+    <style>
+    .tree, .tree ul {
+        margin:0;
+        padding:0;
+        list-style:none
+    }
+    .tree ul {
+        margin-left:1em;
+        position:relative
+    }
+    .tree ul ul {
+        margin-left:.5em
+    }
+    .tree ul:before {
+        content:"";
+        display:block;
+        width:0;
+        position:absolute;
+        top:0;
+        bottom:0;
+        left:0;
+        border-left:1px solid
+    }
+    .tree li {
+        margin:0;
+        padding:0 1em;
+        line-height:2em;
+        color:#369;
+        font-weight:700;
+        position:relative
+    }
+    .tree ul li:before {
+        content:"";
+        display:block;
+        width:10px;
+        height:0;
+        border-top:1px solid;
+        margin-top:-1px;
+        position:absolute;
+        top:1em;
+        left:0
+    }
+    .tree ul li:last-child:before {
+        background:#fff;
+        height:auto;
+        top:1em;
+        bottom:0
+    }
+    .indicator {
+        margin-right:5px;
+    }
+    .tree li a {
+        text-decoration: none;
+        color:#369;
+    }
+    .tree li button, .tree li button:active, .tree li button:focus {
+        text-decoration: none;
+        color:#369;
+        border:none;
+        background:transparent;
+        margin:0px 0px 0px 0px;
+        padding:0px 0px 0px 0px;
+        outline: 0;
+    }
 
+    /*dt, dd {
+        font-family:sans-serif;
+    }*/
+    dt {
+        float:left;
+        clear:left;
+        text-align:right;
+        width:25%;
+        /*color:#bbb;*/
+    }
+    dd {
+        float:left;
+        margin-left:3em;
+        /*color:#999*/
+    }
+    </style>
 </head>
 <body>
 <script>
-    function fileClicked(attachmentId) {
+    function fileClicked(annexId) {
         $.ajax({
-            url: "${g.createLink(controller:'repository',action:'getAttachmentInfo')}",
+            url: "${g.createLink(controller:'repository',action:'getAnnexInfo')}",
             dataType: 'json',
             data: {
-                attachmentId: attachmentId,
+                annexId: annexId,
                 fileName: '',
                 bucket: ''
             },
             success: function (data) {
                 //alert(data.fileName)
-                var newDiv = '<div class="well"><div class="row" style="padding: 0px;"><div class="col-md-6">';
                 $('#fileName').text(data.fileName);
                 $('#bucket').text(data.bucket);
                 $('#size').text(data.size);
@@ -38,54 +113,13 @@
                 $('#editedBy').text(data.editedBy);
                 $('#editedAt').text(data.editedAt);
                 $('#isDeleted').text(data.isDeleted);
-                $('#moveToTrash').attr("href","/repository/moveToTrash?attachmentId=" + data.id)
-                $('#downloadAttachmentDropdown').empty();
+                $('#moveToTrash').attr("href","/repository/moveToTrash?annexId=" + data.id)
+                $('#downloadAnnexDropdown').empty();
                 for (var i = 0; i < data.versions; i++) {
-                    $('#downloadAttachmentDropdown').append('<li><a href="/repository/downloadAttachmentFile?attachmentId=' + data.id + '&amp;versionToDownload='+i + '">Version '+ (i+1) + '</a></li>');
+                    $('#downloadAnnexDropdown').append('<li><a href="/repository/downloadAnnexFile?annexId=' + data.id + '&amp;versionToDownload='+i + '">Version '+ (i+1) + '</a></li>');
                 }
-                $('#uploadAttachmentId').val(data.id)
+                $('#uploadAnnexId').val(data.id)
                 $('#uploadBucket').val(data.bucket)
-
-                //newDiv += '<p><strong>Name: </strong>' + data.fileName + '</p>';
-                newDiv += '<p><strong>Bucket: </strong>' + data.bucket + '</p>';
-                newDiv += '<p><strong>Size: </strong>' + data.size + '</p>';
-                newDiv += '<p><strong>Extension: </strong>' + data.extension + '</p>';
-                newDiv += '<p><strong>Type: </strong>' + data.contentType + '</p>';
-                newDiv += '<p><strong>Created by: </strong>' + data.createdBy + '</p>';
-                newDiv += '<p><strong>Created at: </strong>' + data.createdAt + '</p>';
-                newDiv += '<p><strong>Edited by: </strong>' + data.editedBy + '</p>';
-                newDiv += '<p><strong>Edited at: </strong>' + data.editedAt + '</p>';
-                newDiv += '<p><strong>Deleted: </strong>' + data.isDeleted + '</p></div>';
-                newDiv += '<div class="col-md-6">';
-                newDiv += '<p><strong>Versions to download</strong></p>';
-                newDiv += '<div class="btn-group">';
-                newDiv += '<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">';
-                newDiv += '<span class="fa fa-download" style="margin-right: 5px;"></span><span class="caret"></span></button>';
-                newDiv += '<ul class="dropdown-menu">';
-                for (var i = 0; i < data.versions; i++) {//, params:[attachmentId: data.id, versionToDownload:i]
-                    var attrs = {
-                        'controller': 'repository',
-                        'action': 'downloadAttachmentFile',
-                        'params': {
-                            'attachmentId': data.id,
-                            'versionToDownload':i
-                        }
-                    };
-                    newDiv += '<li><a href="/repository/downloadAttachmentFile?attachmentId=' + data.id + '&amp;versionToDownload='+i + '">Version '+ (i+1) + '</a></li>';
-                }
-                newDiv += '</ul></div>';
-                newDiv += '<p><strong>Actions on file</strong></p>';
-                newDiv += '<p>';
-                newDiv += '<a href="/repository/moveToTrash?attachmentId=' + data.id + '" class="btn btn-danger" role="button" style="margin: 5px;"><span class="fa fa-trash"></a>';//move to trash
-                newDiv += '<a href="#" class="btn btn-primary" role="button" style="margin: 5px;"><span class="fa fa-upload"></a>';//upload
-                newDiv += '<label class="btn btn-default btn-file"><span class="fa fa-upload"><input type="file" name="file" id="file" style="display: none;"></label>';
-                newDiv += '<a href="#" class="btn btn-primary" role="button" style="margin: 5px;"><span class="fa fa-folder-open"></a>';//move to other bucket
-                newDiv += '<a href="#" class="btn btn-primary" role="button" style="margin: 5px;"><span class="fa fa-paperclip"></a>';//edit attachment domain object
-                newDiv += '<a href="#" class="btn btn-primary" role="button" style="margin: 5px;"><span class="fa fa-link"></a>';//link to domain
-                //newDiv += '';
-                newDiv += '</p>';
-                newDiv += '</div></div></div>';
-                //$('#file-description').html(newDiv);
 
             },
             error: function (request, status, error) {
@@ -175,37 +209,17 @@
 
             </p>
             <ul id="tree">
-                <li><a href="#">REPOSITORY ROOT <span class="badge">${attachmentList.size()}</span></a>
-
+                <li><a href="#">REPOSITORY ROOT</a>
                     <ul>
                         <g:each var="bucket" in="${buckets}">
-                            <li><a href="#">${bucket.key}  <span class="badge">${bucket.value.size()}</span></a>
+                            <li><a href="#">${bucket.key}</a>
                                 <ul>
-                                    <g:each var="attachment" in="${bucket.value}">
-                                        <li><a href="#" onclick="fileClicked(${attachment.id})">${attachment.fileName}</a></li>
+                                    <g:each var="annex" in="${bucket.value}">
+                                        <li><a href="#" onclick="fileClicked(${annex.id})">${annex.fileName}</a></li>
                                     </g:each>
                                 </ul>
                             </li>
                         </g:each>
-                    </ul>
-                </li>
-                <li>XRP
-                    <ul>
-                        <li>Company Maintenance</li>
-                        <li>Employees
-                            <ul>
-                                <li>Reports
-                                    <ul>
-                                        <li>Report1</li>
-                                        <li>Report2</li>
-                                        <li>Report3</li>
-                                        <li><g:link controller="repository" action="downloadAttachmentFile" params="[sort: 'title', order: 'asc']">Test linku</g:link></li>
-                                    </ul>
-                                </li>
-                                <li>Employee Maint.</li>
-                            </ul>
-                        </li>
-                        <li>Human Resources</li>
                     </ul>
                 </li>
             </ul>
@@ -250,9 +264,9 @@
                                     <span class="caret">
                                     </span>
                                 </button>
-                                <ul id="downloadAttachmentDropdown" class="dropdown-menu" >
+                                <ul id="downloadAnnexDropdown" class="dropdown-menu" >
                                     %{--<li>
-                                        <a href="/repository/downloadAttachmentFile?attachmentId=1&amp;versionToDownload=0">
+                                        <a href="/repository/downloadAnnexFile?annexId=1&amp;versionToDownload=0">
                                             Version 1
                                         </a>
                                     </li>--}%
@@ -264,8 +278,8 @@
                                 </strong>
                             </p>
                             <p>
-                                <form id="uploadForm" class="MultiFile-intercepted" enctype="multipart/form-data" name="uploadForm" method="post" action="/repository/uploadAttachment">
-                                    <input id="uploadAttachmentId" type="hidden" value="" name="uploadAttachmentId">
+                                <form id="uploadForm" class="MultiFile-intercepted" enctype="multipart/form-data" name="uploadForm" method="post" action="/repository/uploadAnnex">
+                                    <input id="uploadAnnexId" type="hidden" value="" name="uploadAnnexId">
                                     <input id="uploadBucket" type="hidden" value="" name="uploadBucket">
                                     <label class="btn btn-default btn-file">
                                         <span class="fa fa-upload">
@@ -313,11 +327,89 @@
         </div>
     </div>
 </div>
-<asset:javascript src="main.js"></asset:javascript>
+%{--<asset:javascript src="main.js"></asset:javascript>--}%
 <script>
-    $(document).ready(function () {\
+    $.fn.extend({
+        treed: function (o) {
+
+            var openedClass = 'fa-folder-open-o';
+            var closedClass = 'fa-folder-o';
+
+            if (typeof o != 'undefined'){
+                if (typeof o.openedClass != 'undefined'){
+                    openedClass = o.openedClass;
+                }
+                if (typeof o.closedClass != 'undefined'){
+                    closedClass = o.closedClass;
+                }
+            };
+
+            //initialize each of the top levels
+            var tree = $(this);
+            tree.addClass("tree");
+            tree.find('li').has("ul").each(function () {
+                var branch = $(this); //li with children ul
+                branch.prepend("<i class='indicator fa " + closedClass + "'></i>");
+                branch.addClass('branch');
+                branch.on('click', function (e) {
+                    if (this == e.target) {
+                        var icon = $(this).children('i:first');
+                        icon.toggleClass(openedClass + " " + closedClass);
+                        $(this).children().children().toggle();
+                    }
+                })
+                branch.children().children().toggle();
+            });
+            //fire event from the dynamically added icon
+            tree.find('.branch .indicator').each(function(){
+                $(this).on('click', function () {
+                    $(this).closest('li').click();
+                });
+            });
+            //fire event to open branch if the li contains an anchor instead of text
+            tree.find('.branch>a').each(function () {
+                $(this).on('click', function (e) {
+                    $(this).closest('li').click();
+                    e.preventDefault();
+                });
+            });
+            //fire event to open branch if the li contains a button instead of text
+            tree.find('.branch>button').each(function () {
+                $(this).on('click', function (e) {
+                    $(this).closest('li').click();
+                    e.preventDefault();
+                });
+            });
+        }
+    });
+
+    $.fn.extend({
+        fileClicked: function (o) {
+            $.ajax({
+                url:"${g.createLink(controller:'repository',action:'getAnnexInfo')}",
+                dataType: 'json',
+                data: {
+                    annexId: 1,
+                    fileName: '',
+                    bucket: ''
+                },
+                success: function(data) {
+                    alert(data)
+                },
+                error: function(request, status, error) {
+                    alert(error)
+                },
+                complete: function() {
+                }
+            });
+
+        }
+    });
+
+    $('#tree').treed({openedClass: 'fa-folder-open-o', closedClass: 'fa-folder-o'});
+
+    $(document).ready(function () {
         $('#uploadFile').on('change', function () {
-            console.log('#uploadFile changed');
             $('#uploadForm').submit();
         });
     });

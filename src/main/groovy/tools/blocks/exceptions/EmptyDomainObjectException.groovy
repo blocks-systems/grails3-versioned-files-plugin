@@ -6,7 +6,7 @@ package tools.blocks.exceptions
 class EmptyDomainObjectException extends Exception {
 
     EmptyDomainObjectException() {
-        super("Access to attachment with invalid domain object.")
+        super("Access to annex with invalid domain object.")
     }
 
     EmptyDomainObjectException(String msg) {
