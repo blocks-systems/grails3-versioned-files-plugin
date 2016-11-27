@@ -4,6 +4,9 @@ import grails.plugins.*
 import grails.util.GrailsClassUtils
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
 
+import javax.servlet.http.HttpServletResponse
+import java.nio.file.Files
+
 class GrailsVersionedFilesPluginGrailsPlugin extends Plugin {
 
     // the version or versions of Grails the plugin is designed for
@@ -53,6 +56,10 @@ Grails 3 plugin for manage files as attachments with versions.
                 addDomainMethods d.clazz.metaClass, annexableService
             }
         }
+
+        grailsApplication.controllerClasses?.each {c ->
+            addControllerMethods c.clazz.metaClass, service
+        }
     }
 
     void doWithApplicationContext() {
@@ -93,6 +100,32 @@ Grails 3 plugin for manage files as attachments with versions.
             if (params.uploadFile) {
                 annexableService.addAnnex(domainObject, params.uploadFile)
             }
+        }
+
+        mc.downloadAnnex = { params = [:] ->
+            Annex annex = Annex.get(params.annexId)
+            def file = annexableService.downloadAnnexFile(annex, params.version)
+            if (file) {
+                String filename = annex.fileName
+                if (annex.extension) {
+                    filename += "." + annex.extension
+                }
+
+                ['Content-disposition': "${params.containsKey('inline') ? 'inline' : 'annex'};filename=\"$filename\"",
+                 'Cache-Control': 'private',
+                 'Pragma': ''].each {k, v ->
+                    response.setHeader(k, v)
+                }
+
+                if (params.containsKey('withContentType')) {
+                    response.contentType = annex.contentType
+                } else {
+                    response.contentType = 'application/octet-stream'
+                }
+                response.outputStream << Files.newInputStream(file)
+                return
+            }
+            response.status = HttpServletResponse.SC_NOT_FOUND
         }
     }
 
