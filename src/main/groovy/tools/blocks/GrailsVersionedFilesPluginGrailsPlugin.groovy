@@ -58,7 +58,7 @@ Grails 3 plugin for manage files as attachments with versions.
         }
 
         grailsApplication.controllerClasses?.each {c ->
-            addControllerMethods c.clazz.metaClass, service
+            addControllerMethods c.clazz.metaClass, annexableService
         }
     }
 
@@ -82,7 +82,7 @@ Grails 3 plugin for manage files as attachments with versions.
     }
 
     private void addControllerMethods(MetaClass metaClass, AnnexableService annexableService) {
-        mc.find = { params = [:] ->
+        metaClass.find = { params = [:] ->
             String namePart = ""
             String bucket = ""
             if (params.namePart) {
@@ -96,17 +96,17 @@ Grails 3 plugin for manage files as attachments with versions.
             annexableService.find(partName, bucket, params)
         }
 
-        mc.addAnnex = { domainObject, params= [:] ->
+        metaClass.addAnnex = { domainObject, params= [:] ->
             if (params.uploadFile) {
                 annexableService.addAnnex(domainObject, params.uploadFile)
             }
         }
 
-        mc.detachAnnex = { domainObject, params= [:] ->
+        metaClass.detachAnnex = { domainObject, params= [:] ->
             annexableService.detach(domainObject, params)
         }
 
-        mc.downloadAnnex = { params = [:] ->
+        metaClass.downloadAnnex = { params = [:] ->
             Annex annex = Annex.get(params.annexId)
             def file = annexableService.downloadAnnexFile(annex, params.version)
             if (file) {
