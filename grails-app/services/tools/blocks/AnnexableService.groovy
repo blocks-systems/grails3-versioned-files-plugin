@@ -10,6 +10,12 @@ class AnnexableService {
 
     private static final log = LogFactory.getLog(AnnexableService.class)
 
+    /**
+     * Method for get attached annexes for domain object
+     * @param domainObject Object to check
+     * @param params Additional params like order, max or offset
+     * @return Collection of attached annexes
+     */
     def getAnnexesForDomain(def domainObject, def params = [:]) {
         if (!domainObject) {
             throw new EmptyDomainObjectException()
@@ -190,6 +196,20 @@ class AnnexableService {
         annex.save()
         annex.file = file
         add(annex)
+    }
+
+    def detach(def domainObject, def params = [:]) {
+        detach(domainObject, params.annexId as Long)
+    }
+
+    def detach(def domainObject, Long annexId) {
+        Annex annex = Annex.get(annexId)
+        boolean isDeleted = false
+        if (annex) {
+            isDeleted = annex.annexableDomains.removeAll { it.domainName == domainObject?.class?.name && it.domainId == domainObject?.ident()}
+        }
+        annex.save flush:true
+        isDeleted
     }
 
     def moveToTrash(Map params=[:]) {

@@ -41,14 +41,6 @@ class RepositoryController {
                 response.contentType = 'application/octet-stream'
             }
             response.outputStream << Files.newInputStream(file)
-            //file.toFile().withInputStream{fis->
-            //    response.outputStream << fis
-            //}
-
-            // response.contentLength = file.length()
-            // response.outputStream << file.readBytes()
-            // response.outputStream.flush()
-            // response.outputStream.close()
             return
         }
         response.status = HttpServletResponse.SC_NOT_FOUND

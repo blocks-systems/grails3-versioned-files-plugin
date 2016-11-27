@@ -102,6 +102,10 @@ Grails 3 plugin for manage files as attachments with versions.
             }
         }
 
+        mc.detachAnnex = { domainObject, params= [:] ->
+            annexableService.detach(domainObject, params)
+        }
+
         mc.downloadAnnex = { params = [:] ->
             Annex annex = Annex.get(params.annexId)
             def file = annexableService.downloadAnnexFile(annex, params.version)
@@ -141,6 +145,10 @@ Grails 3 plugin for manage files as attachments with versions.
 
         metaClass.addAnnex = { StandardMultipartHttpServletRequest.StandardMultipartFile file
             annexableService.addAnnex(delegate, file)
+        }
+
+        metaClass.detachAnnex = { params = [:] ->
+            annexableService.detach(delegate, params)
         }
     }
 }
