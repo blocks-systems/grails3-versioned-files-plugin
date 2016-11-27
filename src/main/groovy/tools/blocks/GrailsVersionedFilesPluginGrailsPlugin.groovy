@@ -1,6 +1,8 @@
 package tools.blocks
 
 import grails.plugins.*
+import grails.util.GrailsClassUtils
+import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
 
 class GrailsVersionedFilesPluginGrailsPlugin extends Plugin {
 
@@ -44,7 +46,13 @@ Grails 3 plugin for manage files as attachments with versions.
     }
 
     void doWithDynamicMethods() {
-        // TODO Implement registering dynamic methods to classes (optional)
+        AnnexableService annexableService = applicationContext.getBean("annexableService")
+
+        grailsApplication.domainClasses?.each {d ->
+            if (Annexable.class.isAssignableFrom(d.clazz) || GrailsClassUtils.getStaticPropertyValue(d.clazz, "annexable")) {
+                addDomainMethods d.clazz.metaClass, annexableService
+            }
+        }
     }
 
     void doWithApplicationContext() {
@@ -64,5 +72,42 @@ Grails 3 plugin for manage files as attachments with versions.
 
     void onShutdown(Map<String, Object> event) {
         // TODO Implement code that is executed when the application shuts down (optional)
+    }
+
+    private void addControllerMethods(MetaClass metaClass, AnnexableService annexableService) {
+        mc.find = { params = [:] ->
+            String namePart = ""
+            String bucket = ""
+            if (params.namePart) {
+                namePart = params.namePart
+                params.remove('namePart')
+            }
+            if (params.bucket) {
+                bucket = params.bucket
+                params.remove('bucket')
+            }
+            annexableService.find(partName, bucket, params)
+        }
+
+        mc.addAnnex = { domainObject, params= [:] ->
+            if (params.uploadFile) {
+                annexableService.addAnnex(domainObject, params.uploadFile)
+            }
+        }
+    }
+
+    private void addDomainMethods(MetaClass metaClass, AnnexableService annexableService) {
+        metaClass.getAnnexes = { params = [:] ->
+            annexableService.getAnnexesForDomain(delegate, params)
+        }
+
+        metaClass.attachAnnex = { params = [:] ->
+            annexableService.attach(delegate, params.annexId)
+
+        }
+
+        metaClass.addAnnex = { StandardMultipartHttpServletRequest.StandardMultipartFile file
+            annexableService.addAnnex(delegate, file)
+        }
     }
 }

@@ -26,11 +26,7 @@ class AnnexableService {
             eq 'domainId', domainObject.ident()
         }
 
-        if(result) {
-           Object ref = result.getAt('annex')
-        } else {
-            return null
-        }
+        result?.getAt('annex')
     }
 
     def getAnnex(AnnexableDomain annexableDomain, def params = [:]) {
@@ -100,6 +96,23 @@ class AnnexableService {
         result
     }
 
+    def find(String namePart, String bucket, def params= [:]) {
+        params.order = params.order ?: 'desc'
+        params.cache = true
+        def c = Annex.createCriteria()
+        c.eq("","").and {}
+        def criteria = Annex.createCriteria() {
+            like("fileName", namePart)
+        }
+        if (bucket) {
+            criteria = criteria.and {
+                eq("bucket", bucket)
+            }
+        }
+        def results = criteria.list(params)
+        results
+    }
+
     def downloadAnnexFile(Long annexId, Long versionToDownload) {
         Annex annex = Annex.get(annexId)
         downloadAnnexFile(annex, versionToDownload)
@@ -125,6 +138,12 @@ class AnnexableService {
         if (!domainObject.ident()) {
             throw new EmptyDomainObjectException("No identity for domain object")
         }
+        add(file, domainObject)
+    }
+
+    def attach(def domainObject, Long annexId) {
+        Annex annex = Annex.get(annexId)
+        attach(domainObject, annex)
     }
 
     def attach(def domainObject, Annex annex) {
@@ -150,6 +169,16 @@ class AnnexableService {
         annex
     }
 
+    def add(def file, def domainObject) {
+        if (!domainObject) {
+            throw new EmptyDomainObjectException()
+        }
+        if (!domainObject.ident()) {
+            throw new EmptyDomainObjectException("No identity for domain object")
+        }
+        add(file, domainObject.class.name, domainObject.ident())
+    }
+
     def add(def file, String domainName, Long domainId) {
         Annex annex = new Annex()
         annex.fileName = file.filename
@@ -159,7 +188,8 @@ class AnnexableService {
         annexableDomain.domainId = domainId
         annex.addToAnnexableDomains(annexableDomain)
         annex.save()
-        return annex
+        annex.file = file
+        add(annex)
     }
 
     def moveToTrash(Map params=[:]) {
