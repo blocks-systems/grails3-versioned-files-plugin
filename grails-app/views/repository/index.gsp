@@ -383,7 +383,7 @@
         }
     });
 
-    $.fn.extend({
+    /*$.fn.extend({
         fileClicked: function (o) {
             $.ajax({
                 url:"${g.createLink(controller:'repository',action:'getAnnexInfo')}",
@@ -404,7 +404,7 @@
             });
 
         }
-    });
+    });*/
 
     $('#tree').treed({openedClass: 'fa-folder-open-o', closedClass: 'fa-folder-o'});
 

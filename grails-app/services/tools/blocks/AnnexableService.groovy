@@ -58,9 +58,9 @@ class AnnexableService {
     }
 
     def getAnnexesGroupByBucket() {
-        def result = Annex.listOrderByBucket().groupBy({ annex ->
+        def result =  Annex.listOrderByBucket().groupBy { annex ->
             annex.bucket
-        })
+        }
         log.debug(result)
         result
     }
@@ -105,17 +105,9 @@ class AnnexableService {
     def find(String namePart, String bucket, def params= [:]) {
         params.order = params.order ?: 'desc'
         params.cache = true
-        def c = Annex.createCriteria()
-        c.eq("","").and {}
-        def criteria = Annex.createCriteria() {
-            like("fileName", namePart)
+        def results = Annex.createCriteria().list(params) {
+            ilike('fileName', "%${namePart}%")
         }
-        if (bucket) {
-            criteria = criteria.and {
-                eq("bucket", bucket)
-            }
-        }
-        def results = criteria.list(params)
         results
     }
 
@@ -145,6 +137,22 @@ class AnnexableService {
             throw new EmptyDomainObjectException("No identity for domain object")
         }
         add(file, domainObject)
+    }
+
+    def attach(String domainName, Long domainId, Long annexId) {
+        if (!domainName) {
+            throw new EmptyDomainObjectException()
+        }
+        if (!domainId) {
+            throw new EmptyDomainObjectException("No identity for domain object")
+        }
+        AnnexableDomain annexableDomain = new AnnexableDomain()
+        annexableDomain.annex = annex
+        annexableDomain.domainName = domainName
+        annexableDomain.domainId = domainId
+        annex.addToAnnexableDomains(annexableDomain)
+        annex.save()
+        return annex
     }
 
     def attach(def domainObject, Long annexId) {
@@ -198,15 +206,19 @@ class AnnexableService {
         add(annex)
     }
 
-    def detach(def domainObject, def params = [:]) {
-        detach(domainObject, params.annexId as Long)
+    def detach(def params = [:]) {
+        detach(params.domainName, params.domainId as Long, params.annexId as Long)
     }
 
     def detach(def domainObject, Long annexId) {
+        detach(domainObject?.class?.name, domainObject?.ident(), annexId)
+    }
+
+    def detach(String domainName, Long domainId, Long annexId) {
         Annex annex = Annex.get(annexId)
         boolean isDeleted = false
         if (annex) {
-            isDeleted = annex.annexableDomains.removeAll { it.domainName == domainObject?.class?.name && it.domainId == domainObject?.ident()}
+            isDeleted = annex.annexableDomains.removeAll { it.domainName == domainName && it.domainId == domainId}
         }
         annex.save flush:true
         isDeleted

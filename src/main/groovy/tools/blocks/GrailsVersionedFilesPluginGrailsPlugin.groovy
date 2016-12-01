@@ -2,6 +2,8 @@ package tools.blocks
 
 import grails.plugins.*
 import grails.util.GrailsClassUtils
+import org.apache.commons.logging.Log
+import org.apache.commons.logging.LogFactory
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
 
 import javax.servlet.http.HttpServletResponse
@@ -57,6 +59,10 @@ Grails 3 plugin for manage files as attachments with versions.
             }
         }
 
+//        for (controllerClass in grailsApplication.controllerClasses) {
+//            addControllerMethods controllerClass.metaClass, annexableService
+//        }
+
         grailsApplication.controllerClasses?.each {c ->
             addControllerMethods c.clazz.metaClass, annexableService
         }
@@ -106,6 +112,10 @@ Grails 3 plugin for manage files as attachments with versions.
             annexableService.detach(domainObject, params)
         }
 
+        metaClass.showAnnex = { params = [:] ->
+            forward(action:'downloadAnnex', params:params)
+        }
+
         metaClass.downloadAnnex = { params = [:] ->
             Annex annex = Annex.get(params.annexId)
             def file = annexableService.downloadAnnexFile(annex, params.version)
@@ -115,7 +125,7 @@ Grails 3 plugin for manage files as attachments with versions.
                     filename += "." + annex.extension
                 }
 
-                ['Content-disposition': "${params.containsKey('inline') ? 'inline' : 'annex'};filename=\"$filename\"",
+                ['Content-disposition': "${params.containsKey('inline') ? 'inline' : 'attachment'};filename=\"$filename\"",
                  'Cache-Control': 'private',
                  'Pragma': ''].each {k, v ->
                     response.setHeader(k, v)

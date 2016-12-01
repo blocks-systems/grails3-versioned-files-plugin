@@ -15,7 +15,7 @@ class RepositoryController {
         respond Annex.list(params), model:[buckets: buckets]
     }
 
-    def getAttachmentInfo(Long annexId, String fileName, String bucket) {
+    def getAnnexInfo(Long annexId, String fileName, String bucket) {
         def data = annexableService.getAnnexInfo(annexId, fileName, bucket)
         render data as JSON
     }
