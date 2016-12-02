@@ -22,11 +22,19 @@ class AnnexableController {
     }
 
     def attachAnnex() {
-        annexableService.attach(params.domainName, params.domainId as Long, params.annexId as Long)
+        if(annexableService.attach(params.domainName, params.domainId as Long, params.annexId as Long)) {
+            render message(code: 'default.annex.attached',default: 'Annex attached sucefully')
+        } else {
+            render message(code: 'error.generic')
+        }
     }
 
     def detachAnnex() {
-        render annexableService.detach(params) ? 'OK' : 'ERROR'
+        if (annexableService.detach(params)) {
+            render message(code: 'default.annex.detached',default: 'Annex detached sucefully')
+        } else {
+            render message(code: 'error.generic')
+        }
     }
 
     def showAnnex() {

@@ -146,6 +146,7 @@ class AnnexableService {
         if (!domainId) {
             throw new EmptyDomainObjectException("No identity for domain object")
         }
+        Annex annex = Annex.get(annexId)
         AnnexableDomain annexableDomain = new AnnexableDomain()
         annexableDomain.annex = annex
         annexableDomain.domainName = domainName
@@ -218,10 +219,16 @@ class AnnexableService {
         Annex annex = Annex.get(annexId)
         boolean isDeleted = false
         if (annex) {
-            isDeleted = annex.annexableDomains.removeAll { it.domainName == domainName && it.domainId == domainId}
+            def matchingAnnexableDomains = annex.annexableDomains.findAll {
+                it.domainName == domainName && it.domainId == domainId
+            }
+            for (int i = 0; i < matchingAnnexableDomains.size(); i++) {
+                matchingAnnexableDomains.get(i).delete(flush: true)
+            }
+            //isDeleted = annex.annexableDomains.removeAll { it.domainName == domainName && it.domainId == domainId}
         }
-        annex.save flush:true
-        isDeleted
+        //annex.save flush:true
+        true
     }
 
     def moveToTrash(Map params=[:]) {
