@@ -222,12 +222,16 @@ class AnnexableService {
             def matchingAnnexableDomains = annex.annexableDomains.findAll {
                 it.domainName == domainName && it.domainId == domainId
             }
-            for (int i = 0; i < matchingAnnexableDomains.size(); i++) {
-                matchingAnnexableDomains.get(i).delete(flush: true)
+            for (AnnexableDomain annexableDomain : matchingAnnexableDomains) {
+                annex.removeFromAnnexableDomains(annexableDomain)
+                annexableDomain.delete(flush: true)
             }
+            /*for (int i = 0; i < matchingAnnexableDomains.size(); i++) {
+                matchingAnnexableDomains.get(i).delete(flush: true)
+            }*/
             //isDeleted = annex.annexableDomains.removeAll { it.domainName == domainName && it.domainId == domainId}
         }
-        //annex.save flush:true
+        annex.save flush:true
         true
     }
 

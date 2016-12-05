@@ -21,6 +21,12 @@ class AnnexableController {
         render annexableService.add(params.uploadFile, domainName, domainId)
     }
 
+    def uploadAnnex() {
+        /*String domainName = params.domainName
+        Long domainId = params.domainId as Long
+        render annexableService.add(params.uploadFile, domainName, domainId)*/
+    }
+
     def attachAnnex() {
         if(annexableService.attach(params.domainName, params.domainId as Long, params.annexId as Long)) {
             render message(code: 'default.annex.attached',default: 'Annex attached sucefully')
