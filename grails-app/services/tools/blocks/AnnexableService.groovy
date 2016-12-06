@@ -53,7 +53,7 @@ class AnnexableService {
         result.extension = annex.extension
         result.size = annex.length ?: 0
         result.contentType = annex.contentType ?: 'unknown'
-        result.versions = (annex.version + 1)
+        result.versions = (annex.fileVersion + 1)
         return result
     }
 
@@ -121,7 +121,7 @@ class AnnexableService {
             throw new EmptyDomainObjectException("Annex cannot be null")
         }
         if (!versionToDownload) {
-            versionToDownload = annex.version
+            versionToDownload = annex.fileVersion
         }
         def params = [:]
         params.versionToDownload = versionToDownload
@@ -244,7 +244,7 @@ class AnnexableService {
             return
         }
         params.bucket = params.bucket ?: annex.bucket
-        params.version = params.version ?: annex.version
+        params.version = params.version ?: annex.fileVersion
         boolean  ret = FileRepo.moveToTrash(params)
         annex.isDeleted = true
         annex.save flush:true

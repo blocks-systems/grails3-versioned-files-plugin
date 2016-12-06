@@ -11,12 +11,13 @@ class Annex {
     String extension
     String bucket
     String contentType
-    Long length = 0
+    Long fileVersion = 0L
+    Long length = 0L
     def file
 
     static hasMany = [annexableDomains: AnnexableDomain]
 
-    static transients = ['file']
+    static transients = ['file','size']
 
     static constraints = {
         createdAt nullable: false
@@ -30,5 +31,26 @@ class Annex {
         annexableDomains nullable: true
         contentType nullable: true
         length nullable: true
+        fileVersion nullable: true
+    }
+
+    String getSize() {
+        if (length < 1024) {
+            return "${length} b"
+        } else if (length >= 1024 && length < 1048576) {
+            return "${(length / 1024).intValue()} kB"
+        } else if (length >= 1048576 && length < 1073741824) {
+            return "${(length / 1048576).intValue()} MB"
+        } else {
+            return "${(length / 1073741824).intValue()} GB"
+        }
+    }
+
+    String toString() {
+        extension ? "$fileName.$extension" : "$fileName"
+    }
+
+    private void incrementVersion() {
+        fileVersion += 1L
     }
 }

@@ -22,15 +22,16 @@ class AnnexableController {
                 annex = Annex.get(params.annexId)
             } else {//create new annex
                 annex = new Annex()
+                annex.fileName = params.uploadFile.filename
+                if (annex.fileName.contains('.')) {
+                    int idx = annex.fileName.lastIndexOf('.')
+                    annex.extension = annex.fileName.substring(idx+1, annex.fileName.length())
+                }
             }
             //ADD CONTENT TYPE FROM Apache Tika
-            annex.fileName = params.uploadFile.filename
-            if (annex.fileName.contains('.')) {
-                int idx = annex.fileName.lastIndexOf('.')
-                annex.extension = annex.fileName.substring(idx+1, annex.fileName.length())
-            }
             annex.save flush:true//must be saved for new version of domain object
             annex.file = params.uploadFile
+            annex.incrementVersion
             annex = annexableService.add(annex)
             if (params.domainName && params.domainId) { //it also should be attach to domain object
                 AnnexableDomain annexableDomain = new AnnexableDomain()
@@ -71,12 +72,8 @@ class AnnexableController {
         Annex annex = Annex.get(params.annexId as Long)
         def file = annexableService.downloadAnnexFile(annex, params.version as Long)
         if (file) {
-            String filename = annex.fileName
-            if (annex.extension) {
-                filename += "." + annex.extension
-            }
 
-            ['Content-disposition': "${params.containsKey('inline') ? 'inline' : 'attachment'};filename=\"$filename\"",
+            ['Content-disposition': "${params.containsKey('inline') ? 'inline' : 'attachment'};filename=\"$annex.toString()\"",
              'Cache-Control': 'private',
              'Pragma': ''].each {k, v ->
                 response.setHeader(k, v)

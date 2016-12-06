@@ -71,7 +71,7 @@ class FileRepo {
         if (!isInitialized()) {
             init()
         }
-        params.version = params.version ?: annex.version
+        params.version = params.version ?: annex.fileVersion
         if (!params.bucket) {
             if (annex.bucket) {
                 params.bucket = annex.bucket
@@ -82,7 +82,7 @@ class FileRepo {
 
         params.annexId = params.annexId ?: annex.id
         params.file = params.file ?: annex.file
-        params.version = params.version ?: 0
+        //params.version = params.version ?: 0
         annex.contentType = params.file.contentType
         Long fileSize = saveFileToRepo(params)
         annex.length = fileSize
@@ -100,7 +100,7 @@ class FileRepo {
         if (!isInitialized()) {
             init()
         }
-        Long versionToDownload = params.versionToDownload ?: annex.version
+        Long versionToDownload = params.versionToDownload ?: annex.fileVersion
         Path filePath = Paths.get(repoDir.toString(), annex.bucket)
         if (Files.notExists(filePath)) {
             filePath = Files.createDirectory(filePath)
