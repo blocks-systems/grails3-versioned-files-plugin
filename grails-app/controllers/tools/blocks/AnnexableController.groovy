@@ -15,16 +15,34 @@ class AnnexableController {
         render annexableService.find(namePart, bucket, params) as JSON
     }
 
-    def addAnnex() {
-        String domainName = params.domainName
-        Long domainId = params.domainId as Long
-        render annexableService.add(params.uploadFile, domainName, domainId)
-    }
-
     def uploadAnnex() {
-        /*String domainName = params.domainName
-        Long domainId = params.domainId as Long
-        render annexableService.add(params.uploadFile, domainName, domainId)*/
+        if (params.uploadFile) { //OK, file uploaded
+            Annex annex
+            if (params.annexId) { //OK, annex id is set, create new version
+                annex = Annex.get(params.annexId)
+            } else {//create new annex
+                annex = new Annex()
+            }
+            //ADD CONTENT TYPE FROM Apache Tika
+            annex.fileName = params.uploadFile.filename
+            if (annex.fileName.contains('.')) {
+                int idx = annex.fileName.lastIndexOf('.')
+                annex.extension = annex.fileName.substring(idx+1, annex.fileName.length())
+            }
+            annex.save flush:true//must be saved for new version of domain object
+            annex.file = params.uploadFile
+            annex = annexableService.add(annex)
+            if (params.domainName && params.domainId) { //it also should be attach to domain object
+                AnnexableDomain annexableDomain = new AnnexableDomain()
+                annexableDomain.annex = annex
+                annexableDomain.domainName = params.domainName
+                annexableDomain.domainId = params.domainId as Long
+                annex.addToAnnexableDomains(annexableDomain)
+            }
+            annex.save flush:true//size and content type could be changed
+            render message(code: 'default.annex.uploaded',default: 'Annex uploaded sucefully')
+        }
+        response.status = HttpServletResponse.SC_NO_CONTENT
     }
 
     def attachAnnex() {
@@ -50,7 +68,7 @@ class AnnexableController {
     }
 
     def downloadAnnex() {
-        Annex annex = Annex.get(params.annexId)
+        Annex annex = Annex.get(params.annexId as Long)
         def file = annexableService.downloadAnnexFile(annex, params.version as Long)
         if (file) {
             String filename = annex.fileName

@@ -23,6 +23,9 @@ class FileRepo {
         cfg = config
         log.info(cfg)
         initRepoStructure()
+        if (!cfg.bucket) {
+            cfg.bucket = 'common'
+        }
     }
 
     private static def getConfig() {
@@ -69,9 +72,17 @@ class FileRepo {
             init()
         }
         params.version = params.version ?: annex.version
-        params.bucket = params.bucket ?: annex.bucket
+        if (!params.bucket) {
+            if (annex.bucket) {
+                params.bucket = annex.bucket
+            } else {
+                params.bucket = cfg.bucket
+            }
+        }
+
         params.annexId = params.annexId ?: annex.id
         params.file = params.file ?: annex.file
+        params.version = params.version ?: 0
         annex.contentType = params.file.contentType
         Long fileSize = saveFileToRepo(params)
         annex.length = fileSize

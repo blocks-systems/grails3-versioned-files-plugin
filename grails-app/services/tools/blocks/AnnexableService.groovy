@@ -129,16 +129,6 @@ class AnnexableService {
         file
     }
 
-    def addAnnex(def domainObject, StandardMultipartFile file) {
-        if (!domainObject) {
-            throw new EmptyDomainObjectException()
-        }
-        if (!domainObject.ident()) {
-            throw new EmptyDomainObjectException("No identity for domain object")
-        }
-        add(file, domainObject)
-    }
-
     def attach(String domainName, Long domainId, Long annexId) {
         if (!domainName) {
             throw new EmptyDomainObjectException()
@@ -175,6 +165,16 @@ class AnnexableService {
         annex.addToAnnexableDomains(annexableDomain)
         annex.save()
         return annex
+    }
+
+    def addAnnex(def domainObject, StandardMultipartFile file) {
+        if (!domainObject) {
+            throw new EmptyDomainObjectException()
+        }
+        if (!domainObject.ident()) {
+            throw new EmptyDomainObjectException("No identity for domain object")
+        }
+        add(file, domainObject)
     }
 
     def add(Annex annex) {
