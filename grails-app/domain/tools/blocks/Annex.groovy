@@ -49,8 +49,4 @@ class Annex {
     String toString() {
         extension ? "$fileName.$extension" : "$fileName"
     }
-
-    private void incrementVersion() {
-        fileVersion += 1L
-    }
 }

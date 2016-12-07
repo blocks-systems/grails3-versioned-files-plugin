@@ -18,20 +18,25 @@ class AnnexableController {
     def uploadAnnex() {
         if (params.uploadFile) { //OK, file uploaded
             Annex annex
-            if (params.annexId) { //OK, annex id is set, create new version
-                annex = Annex.get(params.annexId)
+            if (params.uploadAnnexId) { //OK, annex id is set, create new version
+                annex = Annex.get(params.uploadAnnexId)
             } else {//create new annex
                 annex = new Annex()
-                annex.fileName = params.uploadFile.filename
-                if (annex.fileName.contains('.')) {
-                    int idx = annex.fileName.lastIndexOf('.')
-                    annex.extension = annex.fileName.substring(idx+1, annex.fileName.length())
+                if (params.uploadFile.filename?.contains('.')) {
+                    int idx = params.uploadFile.filename.lastIndexOf('.')
+                    annex.fileName = params.uploadFile.filename.substring(0, idx)
+                    annex.extension = params.uploadFile.filename.substring(idx+1, params.uploadFile.filename.length())
+                } else {
+                    annex.fileName = params.uploadFile.filename
+                }
+                if (params.uploadBucket) {
+                    annex.bucket = params.uploadBucket
                 }
             }
             //ADD CONTENT TYPE FROM Apache Tika
             annex.save flush:true//must be saved for new version of domain object
             annex.file = params.uploadFile
-            annex.incrementVersion
+            annex.fileVersion++
             annex = annexableService.add(annex)
             if (params.domainName && params.domainId) { //it also should be attach to domain object
                 AnnexableDomain annexableDomain = new AnnexableDomain()
@@ -69,11 +74,11 @@ class AnnexableController {
     }
 
     def downloadAnnex() {
-        Annex annex = Annex.get(params.annexId as Long)
+        Annex annex = Annex.get(params.annexId)
         def file = annexableService.downloadAnnexFile(annex, params.version as Long)
         if (file) {
 
-            ['Content-disposition': "${params.containsKey('inline') ? 'inline' : 'attachment'};filename=\"$annex.toString()\"",
+            ['Content-disposition': "${params.containsKey('inline') ? 'inline' : 'attachment'};filename=\"$annex\"",
              'Cache-Control': 'private',
              'Pragma': ''].each {k, v ->
                 response.setHeader(k, v)

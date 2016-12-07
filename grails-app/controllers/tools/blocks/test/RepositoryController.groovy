@@ -53,10 +53,12 @@ class RepositoryController {
             if (params.uploadAnnexId) {//OK, annex id is set
                 annex = Annex.get(params.uploadAnnexId)
                 annex.file = params.uploadFile
-                annex.fileName = params.uploadFile.filename
-                if (annex.fileName.contains('.')) {
+                if (params.uploadFile.filename?.contains('.')) {
                     int idx = annex.fileName.lastIndexOf('.')
-                    annex.extension = annex.fileName.substring(idx+1, annex.fileName.length())
+                    annex.fileName = params.uploadFile.filename.substring(0, idx)
+                    annex.extension = params.uploadFile.filename.substring(idx+1, params.uploadFile.filename.length())
+                } else {
+                    annex.fileName = params.uploadFile.filename
                 }
                 //ADD CONTENT TYPE FROM Apache Tika
 
