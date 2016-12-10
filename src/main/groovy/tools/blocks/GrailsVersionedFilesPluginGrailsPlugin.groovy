@@ -40,7 +40,7 @@ Grails 3 plugin for manage files as attachments with versions.
     def developers = [ [ name: "Filip Grochowski", email: "filip.grochowski@blocks.tools"],[name: "Emil Wesołowski", email:"emil.wesolowski@blocks.tools"]]
 
     // Location of the plugin's issue tracker.
-//    def issueManagement = [ system: "JIRA", url: "http://jira.grails.org/browse/GPMYPLUGIN" ]
+    def issueManagement = [ system: "JIRA", url: "https://github.com/fgroch/grails3-versioned-files-plugin/issues" ]
 
     // Online location of the plugin's browseable source code.
     def scm = [ url: "https://github.com/fgroch/grails3-versioned-files-plugin" ]
@@ -51,20 +51,14 @@ Grails 3 plugin for manage files as attachments with versions.
     }
 
     void doWithDynamicMethods() {
+        ExpandoMetaClass.enableGlobally()
+
         AnnexableService annexableService = applicationContext.getBean("annexableService")
 
         grailsApplication.domainClasses?.each {d ->
             if (Annexable.class.isAssignableFrom(d.clazz) || GrailsClassUtils.getStaticPropertyValue(d.clazz, "annexable")) {
                 addDomainMethods d.clazz.metaClass, annexableService
             }
-        }
-
-//        for (controllerClass in grailsApplication.controllerClasses) {
-//            addControllerMethods controllerClass.metaClass, annexableService
-//        }
-
-        grailsApplication.controllerClasses?.each {c ->
-            addControllerMethods c.clazz.metaClass, annexableService
         }
     }
 
@@ -85,62 +79,6 @@ Grails 3 plugin for manage files as attachments with versions.
 
     void onShutdown(Map<String, Object> event) {
         // TODO Implement code that is executed when the application shuts down (optional)
-    }
-
-    private void addControllerMethods(MetaClass metaClass, AnnexableService annexableService) {
-        metaClass.find = { params = [:] ->
-            String namePart = ""
-            String bucket = ""
-            if (params.namePart) {
-                namePart = params.namePart
-                params.remove('namePart')
-            }
-            if (params.bucket) {
-                bucket = params.bucket
-                params.remove('bucket')
-            }
-            annexableService.find(partName, bucket, params)
-        }
-
-        metaClass.addAnnex = { domainObject, params= [:] ->
-            if (params.uploadFile) {
-                annexableService.addAnnex(domainObject, params.uploadFile)
-            }
-        }
-
-        metaClass.detachAnnex = { domainObject, params= [:] ->
-            annexableService.detach(domainObject, params)
-        }
-
-        metaClass.showAnnex = { params = [:] ->
-            forward(action:'downloadAnnex', params:params)
-        }
-
-        metaClass.downloadAnnex = { params = [:] ->
-            Annex annex = Annex.get(params.annexId)
-            def file = annexableService.downloadAnnexFile(annex, params.version)
-            if (file) {
-                String filename = annex.fileName
-                if (annex.extension) {
-                    filename += "." + annex.extension
-                }
-
-                ['Content-disposition': "${params.containsKey('inline') ? 'inline' : 'attachment'};filename=\"$filename\"",
-                 'Cache-Control': 'private',
-                 'Pragma': ''].each {k, v ->
-                    response.setHeader(k, v)
-                }
-
-                if (params.containsKey('withContentType')) {
-                    response.contentType = annex.contentType
-                } else {
-                    response.contentType = 'application/octet-stream'
-                }
-                response.outputStream << Files.newInputStream(file)
-                return
-            }
-            response.status = HttpServletResponse.SC_NOT_FOUND
-        }
     }
 
     private void addDomainMethods(MetaClass metaClass, AnnexableService annexableService) {

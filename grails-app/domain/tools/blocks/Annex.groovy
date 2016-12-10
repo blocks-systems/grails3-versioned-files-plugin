@@ -31,7 +31,7 @@ class Annex {
         annexableDomains nullable: true
         contentType nullable: true
         length nullable: true
-        fileVersion nullable: true
+        fileVersion nullable: false
     }
 
     String getSize() {

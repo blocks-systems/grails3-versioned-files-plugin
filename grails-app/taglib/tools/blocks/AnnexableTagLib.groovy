@@ -45,7 +45,6 @@ class AnnexableTagLib {
             def wrapper = inputName + 'Wrapper'
             //html
             final StringBuilder sb = new StringBuilder()
-            //def findLink = g.createLink(controller: 'annexable', action: 'showAnnex', params:['annexId':annex.id])
             sb.append("<div class='container content' id='$wrapper'>")
             sb.append("<div class='row' style='padding-bottom:20px;'>")
             sb.append("<div class='col-lg-4'>")
