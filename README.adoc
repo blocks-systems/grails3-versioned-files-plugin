@@ -1,0 +1,101 @@
+= Grails 3 Versioned Files plugin
+
+== Introduction to the Grails 3 Versioned Files plugin
+
+The Grails 3 Versioned Files plugin adds support to attach files to domain models. It was intially inspired by great attachmentable plugin which at the time was limited to grails 2.
+Main difference is with this plugin you can attach files and manage their versions.
+
+=== Supported operations:
+* attach
+* detach
+* upload (brand new file or new version of existing one)
+* move to trash
+* empty trash
+* group in buckets
+* show
+* download (if the version is not selected will be downloaded latest)
+* find
+
+== Installation
+
+Add a dependency in `build.gradle`:
+
+[source,java]
+[subs="attributes"]
+----
+dependencies {
+   ...
+   compile 'tools.blocks:grails3-versioned-files-plugin:{project-version}'
+   ...
+----
+You only need to set these properties in application.yml or application.groovy:
+
+[source,java]
+----
+annexable:
+    repositoryPath: /home/user_name/annexable_docs
+    bucket: test
+----
+
+== Usage
+To enable Annexable interface you have teo options, static property:
+[source,groovy]
+.`Book.groovy`
+----
+package com.mycompany
+
+class Book {
+
+   static annexable = true
+
+   ....
+}
+----
+or implement Anneable interface:
+[source,groovy]
+.`Book.groovy`
+----
+package com.mycompany
+
+class Book implements Annexable {
+
+   ....
+}
+----
+From now you can use your domains as files container.
+
+=== AnnexableControllerTrait
+All controllers are enhanced by this trait. Methods added:
+
+.Methods added to controllers classes
+[cols="40,60"]
+|====================
+| *Method* | *Description*
+
+| *findAnnex*
+|The header value for `insecureHeaderName`
+
+| *uploadAnnex*
+|sdasd
+
+| *attachAnnex*
+|sdasd
+
+| *detachAnnex*
+|sdasd
+
+| *showAnnex*
+|sdasd
+
+| *downloadAnnex*
+|sdasd
+
+|====================
+
+=== AnnexableController
+
+=== AnnexableService
+
+=== Tags library
+
+== History
