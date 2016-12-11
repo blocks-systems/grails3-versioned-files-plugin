@@ -4,6 +4,7 @@ import grails.transaction.Transactional
 import org.apache.commons.logging.LogFactory
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest.StandardMultipartFile
 import tools.blocks.exceptions.EmptyDomainObjectException
+import tools.blocks.exceptions.InsufficientParamsException
 
 @Transactional
 class AnnexableService {
@@ -136,6 +137,9 @@ class AnnexableService {
         if (!domainId) {
             throw new EmptyDomainObjectException("No identity for domain object")
         }
+        if (!annexId) {
+            throw new InsufficientParamsException()
+        }
         Annex annex = Annex.get(annexId)
         AnnexableDomain annexableDomain = new AnnexableDomain()
         annexableDomain.annex = annex
@@ -205,10 +209,6 @@ class AnnexableService {
         annex.save()
         annex.file = file
         add(annex)
-    }
-
-    def detach(def params = [:]) {
-        detach(params.domainName, params.domainId as Long, params.annexId as Long)
     }
 
     def detach(def domainObject, Long annexId) {

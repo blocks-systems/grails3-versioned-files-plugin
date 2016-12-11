@@ -60,7 +60,7 @@ class AnnexableController {
     }
 
     def detachAnnex() {
-        if (annexableService.detach(params)) {
+        if (annexableService.detach(params.domainName, params.domainId as Long, params.annexId as Long)) {
             render message(code: 'default.annex.detached',default: 'Annex detached sucefully')
         } else {
             render message(code: 'error.generic')
