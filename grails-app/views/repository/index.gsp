@@ -383,29 +383,6 @@
         }
     });
 
-    /*$.fn.extend({
-        fileClicked: function (o) {
-            $.ajax({
-                url:"${g.createLink(controller:'repository',action:'getAnnexInfo')}",
-                dataType: 'json',
-                data: {
-                    annexId: 1,
-                    fileName: '',
-                    bucket: ''
-                },
-                success: function(data) {
-                    alert(data)
-                },
-                error: function(request, status, error) {
-                    alert(error)
-                },
-                complete: function() {
-                }
-            });
-
-        }
-    });*/
-
     $('#tree').treed({openedClass: 'fa-folder-open-o', closedClass: 'fa-folder-o'});
 
     $(document).ready(function () {
