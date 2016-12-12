@@ -64,6 +64,12 @@ class Book implements Annexable {
 ----
 From now you can use your domains as files container.
 
+=== Annex domain model
+Contains meta information about file like type, size, version or name.
+
+=== AnnexableDomain domain model
+Allows to link your domain models with files (annexes).
+
 === AnnexableControllerTrait
 All controllers are enhanced by this trait. Methods added:
 
@@ -73,29 +79,34 @@ All controllers are enhanced by this trait. Methods added:
 | *Method* | *Description*
 
 | *findAnnex*
-|The header value for `insecureHeaderName`
+| Allows to find annexes by part of the name of file and bucket
 
 | *uploadAnnex*
-|sdasd
+|Allows to upload file as new Annex object or new version of existing one
 
 | *attachAnnex*
-|sdasd
+|Allows to attach existing Annex object to your domain object
 
 | *detachAnnex*
-|sdasd
+|Allows to detach previously attached Annex from your domain object
 
 | *showAnnex*
-|sdasd
+|Same as downloadAnnex method but with changed headers
 
 | *downloadAnnex*
-|sdasd
+|Allows to download file (if not version is set then the latest one will be used)
 
 |====================
 
 === AnnexableController
+Contains same methods as this added by `AnnexableControllerTrait`. It can be used instead of enhanced controllers methods.
 
 === AnnexableService
+Contains methods which operates on FileRepo helper class.
 
 === Tags library
 
 == History
+
+=== Versions:
+* 0.1.0 - first release with complete set of methods, controller enhance trait, service and files operations helper.
