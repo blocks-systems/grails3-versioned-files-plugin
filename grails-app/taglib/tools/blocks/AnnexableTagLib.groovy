@@ -228,6 +228,7 @@ class AnnexableTagLib {
 
     def download = { attrs, body ->
         def annex = attrs.remove('annex')
+        def controller = attrs.remove('controller') ?: 'annexable'
         final StringBuilder sb = new StringBuilder()
 
         if(annex) {
@@ -239,12 +240,27 @@ class AnnexableTagLib {
             sb.append("</button>")
             sb.append("<ul class='dropdown-menu'>")
             for (int i = 0; i <= annex.fileVersion; i++) {
-                def downloadLink = g.createLink(controller: 'annexable', action: 'downloadAnnex', params: ['annexId': annex.id, 'version': i])
+                def downloadLink = g.createLink(controller: controller, action: 'downloadAnnex', params: ['annexId': annex.id, 'version': i])
                 sb.append("<li><a href='${downloadLink}'>version ${i}</a></li>")
             }
             sb.append("</ul>")
             sb.append("</div>")
         }
+
+        out << sb.toString()
+    }
+
+    def show = { attrs, body ->
+        def annexId = attrs.remove('annexId')
+        def controller = attrs.remove('controller') ?: 'annexable'
+        def iframeId = attrs.remove('iframeId') ?: 'showAnnexiFrame'
+        final StringBuilder sb = new StringBuilder()
+
+        sb.append("<a class='btn btn-default' href='#' onClick='showAnnex(${annexId})'><span class='fa fa-eye'></span></a>")
+        sb.append("<script>")
+        sb.append("function showAnnex(id) {")
+        sb.append("\$('#${iframeId}').attr('src', '/${controller}/showAnnex?annexId='+id);};")
+        sb.append("</script>")
 
         out << sb.toString()
     }
