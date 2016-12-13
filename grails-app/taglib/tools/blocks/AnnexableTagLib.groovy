@@ -65,7 +65,7 @@ class AnnexableTagLib {
             sb.append("<div class='col-lg-6 col-lg-offset-2' style='padding-right: 0px;'>")
             sb.append("<div class='input-group'>")
             sb.append("<div class='input-group-btn'>")
-            sb.append("<a class='btn btn-default' href='#' id='annexToAttach' name = 'annexToAttach'><span class='fa fa-link'></span> name of the file</a>")
+            sb.append("<a class='btn btn-default' href='#' id='annexToAttach' name='annexToAttach'><span class='fa fa-link'></span> name of the file</a>")
             sb.append("<button type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>")
             sb.append("<span class='caret'></span>")
             sb.append("<span class='badge' id='annexToAttachFoundedCount' name='annexToAttachFoundedCount' style='margin-left: 5px;'>0</span>")
@@ -190,7 +190,7 @@ class AnnexableTagLib {
             sb.append("function setAttachLink(id, fileName) {")
             sb.append("\$('#annexToAttach').text(fileName);")
             sb.append("\$('#annexToAttach').prepend(\"<span class='fa fa-link'></span> \");")
-            sb.append("\$('#annexToAttach').attr('href', '/annexable/attachAnnex?domainName=\${testAttachment.class.name}&domainId=\${testAttachment.id}&annexId='+id);};")
+            sb.append("\$('#annexToAttach').attr('href', '/annexable/attachAnnex?domainName=${bean.class.name}&domainId=${bean.id}&annexId='+id);};")
             sb.append("</script>")
 
             out << sb.toString()
@@ -261,6 +261,30 @@ class AnnexableTagLib {
         sb.append("function showAnnex(id) {")
         sb.append("\$('#${iframeId}').attr('src', '/${controller}/showAnnex?annexId='+id);};")
         sb.append("</script>")
+
+        out << sb.toString()
+    }
+
+    def attach = { attrs, body ->
+        def annexId = attrs.remove('annexId')
+        def controller = attrs.remove('controller') ?: 'annexable'
+        def bean = attrs.remove('bean')
+        def fileName = attrs.remove('fileName') ?: ''
+        final StringBuilder sb = new StringBuilder()
+
+        sb.append("<a class='btn btn-default' id='annexToAttach' name='annexToAttach' href='/${controller}/attachAnnex?domainName=${bean?.class?.name}&domainId=${bean?.id}&annexId=${annexId}'><span class='fa fa-link'></span> ${fileName}</a>")
+
+        out << sb.toString()
+    }
+
+    def detach = { attrs, body ->
+        def annexId = attrs.remove('annexId')
+        def controller = attrs.remove('controller') ?: 'annexable'
+        def bean = attrs.remove('bean')
+        final StringBuilder sb = new StringBuilder()
+
+        def detachLink = g.createLink(controller: controller, action: 'detachAnnex', params: ['annexId': annexId, 'domainName': bean.class.name, 'domainId': bean.ident()])
+        sb.append("<a class='btn btn-default' href='${detachLink}'><span class='fa fa-unlink'></span></a>")
 
         out << sb.toString()
     }
