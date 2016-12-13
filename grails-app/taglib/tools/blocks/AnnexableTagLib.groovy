@@ -197,6 +197,58 @@ class AnnexableTagLib {
         }
     }
 
+    def upload = { attrs, body ->
+        def bean = attrs.remove('bean')
+        def bucket = attrs.remove('bucket') ?: 'common'
+        def controller = attrs.remove('controller') ?: 'annexable'
+        def uploadAnnexId = attrs.remove('uploadAnnexId')
+        final StringBuilder sb = new StringBuilder()
+
+        sb.append("<form id='uploadAnnexForm' class='MultiFile-intercepted annex-upload-inline' enctype='multipart/form-data' name='uploadAnnexForm' method='post' action='/${controller}/uploadAnnex'>")
+        sb.append("<input id='uploadBucket' type='hidden' value='${bucket}' name='uploadBucket'>")
+        sb.append("<input id='domainName' type='hidden' value='${bean?.class.name}' name='domainName'>")
+        sb.append("<input id='domainId' type='hidden' value='${bean?.ident()}' name='domainId'>")
+        sb.append("<input id='uploadAnnexId' type='hidden' value='${uploadAnnexId}' name='uploadAnnexId'>")
+        sb.append("<label class='btn btn-default btn-file'>")
+        sb.append("<span class='fa fa-upload'>")
+        sb.append("<input class='upload-input' type='file' name='uploadFile' id='uploadFile' style='display: none;'>")
+        sb.append("</span>")
+        sb.append("</label>")
+        sb.append("</form>")
+        sb.append("<script>")
+        sb.append("\$(document).ready(function () {")
+        sb.append("\$('.upload-input').on('change', function () {")
+        sb.append("\$('#uploadAnnexForm').submit();")
+        sb.append("});")
+        sb.append("});")
+        sb.append("</script>")
+
+        out << sb.toString()
+    }
+
+    def download = { attrs, body ->
+        def annex = attrs.remove('annex')
+        final StringBuilder sb = new StringBuilder()
+
+        if(annex) {
+            sb.append("<div class='btn-group'>")
+            sb.append("<button type='button' class='btn btn-default'><span class='fa fa-download'></span></button>")
+            sb.append("<button type='button' class='btn btn-default dropdown-toggle' data-toggle='dropdown' aria-haspopup='true' aria-expanded='false'>")
+            sb.append("<span class='caret'></span>")
+            sb.append("<span class='sr-only'>Toggle Dropdown</span>")
+            sb.append("</button>")
+            sb.append("<ul class='dropdown-menu'>")
+            for (int i = 0; i <= annex.fileVersion; i++) {
+                def downloadLink = g.createLink(controller: 'annexable', action: 'downloadAnnex', params: ['annexId': annex.id, 'version': i])
+                sb.append("<li><a href='${downloadLink}'>version ${i}</a></li>")
+            }
+            sb.append("</ul>")
+            sb.append("</div>")
+        }
+
+        out << sb.toString()
+    }
+
     static final Map MIME_ICON_MAP = [
             pdf: 'fa-file-pdf-o',
             doc: 'fa-file-word-o',

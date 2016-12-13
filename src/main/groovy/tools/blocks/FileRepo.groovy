@@ -29,7 +29,7 @@ class FileRepo {
     }
 
     private static def getConfig() {
-        Holders.config?.gvfp
+        Holders.config?.annexable
     }
 
     protected static isInitialized() {
