@@ -110,3 +110,9 @@ Contains methods which operates on FileRepo helper class.
 
 === Versions:
 * 0.1.0 - first release with complete set of methods, controller enhance trait, service and files operations helper.
+
+=== Roadmap
+* Version 0.2.0:
+** Non bootstrap tags
+** User access handling
+** Bucket per domain (configurable)
