@@ -38,7 +38,7 @@ annexable:
 ----
 
 == Usage
-To enable Annexable interface you have teo options, static property:
+To enable Annexable interface you have two options, static property:
 [source,groovy]
 .`Book.groovy`
 ----
@@ -51,7 +51,7 @@ class Book {
    ....
 }
 ----
-or implement Anneable interface:
+or implement Annexable interface:
 [source,groovy]
 .`Book.groovy`
 ----
@@ -108,7 +108,7 @@ Contains methods which operates on FileRepo helper class.
 
 Namespace of AnnexableTagLib is `annexable`. It use boostrap, jquery and font-awesome (not included).
 
-==== Tags supported by Annexable Tag Libraby (Boostrap version)
+==== Tags supported by this plugin (Boostrap version)
 
 *annexesDomainPanel*
 
@@ -122,13 +122,13 @@ Panel for use with domain model. Contains full set of operations, with search fo
 | Domain model to use with
 
 | *controller*
-| Controller name to handle requests (if not set `annexable` will bu used)
+| Controller name to handle requests (if not set `annexable` will be used)
 
 | *name*
-| Name of HTML element (if not set `annex` will bu used)
+| Name of HTML element (if not set `annex` will be used)
 
 | *bucket*
-| Name of bucket (if not set `common` will bu used)
+| Name of bucket (if not set `common` will be used)
 
 |===
 
@@ -150,10 +150,10 @@ Tag for upload file. File can uploaded as new version of existing Annex or brand
 | Domain model to use with (if set new Annex will be linked with model)
 
 | *controller*
-| Controller name to handle requests (if not set `annexable` will bu used)
+| Controller name to handle requests (if not set `annexable` will be used)
 
 | *bucket*
-| Name of bucket (if not set `common` will bu used)
+| Name of bucket (if not set `common` will be used)
 
 | *uploadAnnexId*
 | Identity of Annex object (if not set new Annex will be created)
@@ -177,7 +177,7 @@ Tag for download file with particular version. Tag display versions of the Annex
 | Annex domain model to download
 
 | *controller*
-| Controller name to handle requests (if not set `annexable` will bu used)
+| Controller name to handle requests (if not set `annexable` will be used)
 
 |===
 
@@ -198,7 +198,7 @@ Tag for display file content. It's implemented as iFrame, so iframeId must be sp
 | Id of existing Annex object
 
 | *controller*
-| Controller name to handle requests (if not set `annexable` will bu used)
+| Controller name to handle requests (if not set `annexable` will be used)
 
 | *iframeId*
 | Id property of HTML iFrame element (must be set and exists)
@@ -225,7 +225,7 @@ Tag for attach Annex to domain model.
 | Id of existing Annex object
 
 | *controller*
-| Controller name to handle requests (if not set `annexable` will bu used)
+| Controller name to handle requests (if not set `annexable` will be used)
 
 | *fileName*
 | Name of the file to attach (optional, just for display on button)
@@ -252,7 +252,7 @@ Tag for detach Annex from domain model.
 | Id of existing Annex object
 
 | *controller*
-| Controller name to handle requests (if not set `annexable` will bu used)
+| Controller name to handle requests (if not set `annexable` will be used)
 
 |===
 
