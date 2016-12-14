@@ -99,12 +99,167 @@ All controllers are enhanced by this trait. Methods added:
 |====================
 
 === AnnexableController
-Contains same methods as this added by `AnnexableControllerTrait`. It can be used instead of enhanced controllers methods.
+Contains same methods as these added by `AnnexableControllerTrait`. It can be used instead of enhanced controllers methods.
 
 === AnnexableService
 Contains methods which operates on FileRepo helper class.
 
 === Tags library
+
+Namespace of AnnexableTagLib is `annexable`. It use boostrap, jquery and font-awesome (not included).
+
+==== Tags supported by Annexable Tag Libraby (Boostrap version)
+
+*annexesDomainPanel*
+
+Panel for use with domain model. Contains full set of operations, with search for attach. Can be treated as example or can be used as complete solution. Example of usage in gsp:
+
+[cols="40,60"]
+|===
+| *Property* | *Description*
+
+| *bean*
+| Domain model to use with
+
+| *controller*
+| Controller name to handle requests (if not set `annexable` will bu used)
+
+| *name*
+| Name of HTML element (if not set `annex` will bu used)
+
+| *bucket*
+| Name of bucket (if not set `common` will bu used)
+
+|===
+
+[source,groovy]
+----
+<annexable:annexesDomainPanel bean="${testAnnex}" controller="testAnnex" name="annexes" bucket="testBucket"/>
+----
+
+
+*upload*
+
+Tag for upload file. File can uploaded as new version of existing Annex or brand new Annex. It can be also linked with existing domain model if specified.
+
+[cols="40,60"]
+|===
+| *Property* | *Description*
+
+| *bean*
+| Domain model to use with (if set new Annex will be linked with model)
+
+| *controller*
+| Controller name to handle requests (if not set `annexable` will bu used)
+
+| *bucket*
+| Name of bucket (if not set `common` will bu used)
+
+| *uploadAnnexId*
+| Identity of Annex object (if not set new Annex will be created)
+
+|===
+
+[source,groovy]
+----
+<annexable:upload bean="${testAnnex}" controller="testAnnex" uploadAnnexId=1 bucket="testBucket"/>
+----
+
+*download*
+
+Tag for download file with particular version. Tag display versions of the Annex.
+
+[cols="40,60"]
+|===
+| *Property* | *Description*
+
+| *annex*
+| Annex domain model to download
+
+| *controller*
+| Controller name to handle requests (if not set `annexable` will bu used)
+
+|===
+
+[source,groovy]
+----
+<annexable:download bean="${testAnnex}" controller="testAnnex" />
+----
+
+*show*
+
+Tag for display file content. It's implemented as iFrame, so iframeId must be specified and point to existing HTML element.
+
+[cols="40,60"]
+|===
+| *Property* | *Description*
+
+| *annexId*
+| Id of existing Annex object
+
+| *controller*
+| Controller name to handle requests (if not set `annexable` will bu used)
+
+| *iframeId*
+| Id property of HTML iFrame element (must be set and exists)
+
+|===
+
+[source,groovy]
+----
+<annexable:show annexId=1 controller="testAnnex" iframeId="showIFrame"/>
+----
+
+*attach*
+
+Tag for attach Annex to domain model.
+
+[cols="40,60"]
+|===
+| *Property* | *Description*
+
+| *bean*
+| Domain model to attach to
+
+| *annexId*
+| Id of existing Annex object
+
+| *controller*
+| Controller name to handle requests (if not set `annexable` will bu used)
+
+| *fileName*
+| Name of the file to attach (optional, just for display on button)
+
+|===
+
+[source,groovy]
+----
+<annexable:attach bean="${testAnnex}" annexId=1 controller="testAnnex" fileName="test annex.png" />
+----
+
+*detach*
+
+Tag for detach Annex from domain model.
+
+[cols="40,60"]
+|===
+| *Property* | *Description*
+
+| *bean*
+| Domain model to detach from
+
+| *annexId*
+| Id of existing Annex object
+
+| *controller*
+| Controller name to handle requests (if not set `annexable` will bu used)
+
+|===
+
+[source,groovy]
+----
+<annexable:detach bean="${testAnnex}" annexId=1 controller="testAnnex" />
+----
 
 == History
 

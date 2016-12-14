@@ -37,8 +37,7 @@ class AnnexableTagLib {
     def annexesDomainPanel = { attrs, body ->
         def bean = attrs.remove('bean')
         def bucket = attrs.remove('bucket')
-        def controller = attrs.remove('controller')
-        controller = controller ?: 'annexable'
+        def controller = attrs.remove('controller') ?: 'annexable'
 
         if (bean?.metaClass?.hasProperty(bean, 'annexes') != null) {
             def inputName = attrs.remove('name') ?: 'annex'
