@@ -13,12 +13,12 @@ Main difference is with this plugin you can attach files and manage their versio
 * empty trash
 * group in buckets
 * show
-* download (if the version is not selected will be downloaded latest)
+* download (if no version selected, latest is downloaded)
 * find
 
 == Installation
 
-Add a dependency in `build.gradle`:
+Add the dependency in `build.gradle`:
 
 [source,java]
 [subs="attributes"]
@@ -94,7 +94,7 @@ All controllers are enhanced by this trait. Methods added:
 |Same as downloadAnnex method but with changed headers
 
 | *downloadAnnex*
-|Allows to download file (if not version is set then the latest one will be used)
+|Allows to download file (if no version is set then the latest one will be used)
 
 |====================
 
@@ -102,7 +102,7 @@ All controllers are enhanced by this trait. Methods added:
 Contains same methods as these added by `AnnexableControllerTrait`. It can be used instead of enhanced controllers methods.
 
 === AnnexableService
-Contains methods which operates on FileRepo helper class.
+Contains methods which operate on FileRepo helper class.
 
 === Tags library
 
@@ -112,7 +112,7 @@ Namespace of AnnexableTagLib is `annexable`. It use boostrap, jquery and font-aw
 
 *annexesDomainPanel*
 
-Panel for use with domain model. Contains full set of operations, with search for attach. Can be treated as example or can be used as complete solution. Example of usage in gsp:
+Panel for use with domain model. Contains full set of operations, with search for attach. Can be treated as an example or can be used as complete solution. Example of usage in gsp:
 
 [cols="40,60"]
 |===
@@ -167,7 +167,7 @@ Tag for upload file. File can uploaded as new version of existing Annex or brand
 
 *download*
 
-Tag for download file with particular version. Tag display versions of the Annex.
+Tag for downloading file with particular version. Tag displays versions of the Annex.
 
 [cols="40,60"]
 |===
@@ -188,7 +188,7 @@ Tag for download file with particular version. Tag display versions of the Annex
 
 *show*
 
-Tag for display file content. It's implemented as iFrame, so iframeId must be specified and point to existing HTML element.
+Tag to display file content. It's implemented as iFrame, so iframeId must be specified and points to existing HTML element.
 
 [cols="40,60"]
 |===
@@ -212,7 +212,7 @@ Tag for display file content. It's implemented as iFrame, so iframeId must be sp
 
 *attach*
 
-Tag for attach Annex to domain model.
+Tag for attaching Annex to domain model.
 
 [cols="40,60"]
 |===
