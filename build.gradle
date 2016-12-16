@@ -62,9 +62,9 @@ bintray {
     publications = ['maven']
     pkg {
         repo = 'plugins'
-        githubRepo = 'fgroch/grails3-versioned-files-plugin' //Optional Github repository
-        githubReleaseNotesFile = 'README.adoc' //Optional Github readme file
         name = "grails3-versioned-files-plugin"
+        //githubRepo = 'fgroch/grails3-versioned-files-plugin' //Optional Github repository
+        //githubReleaseNotesFile = 'README.adoc' //Optional Github readme file
         licenses = ['Apache-2.0']
         websiteUrl = 'http://grails.org/plugin/grails-versioned-files-plugin'
         issueTrackerUrl = 'https://github.com/fgroch/grails3-versioned-files-plugin/issues'
@@ -73,8 +73,8 @@ bintray {
 }
 
 grailsPublish {
-    user = 'user'
-    key = 'key'
+    //user = 'user'
+    //key = 'key'
     githubSlug = 'fgroch/grails3-versioned-files-plugin'
     license {
         name = 'Apache-2.0'

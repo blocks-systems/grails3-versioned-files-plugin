@@ -15,7 +15,9 @@ class GrailsVersionedFilesPluginGrailsPlugin extends Plugin {
     def grailsVersion = "3.2.2 > *"
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
-        "grails-app/views/error.gsp"
+        "grails-app/views/error.gsp",
+        "grails-app/views/repository/index.gsp",
+        "grails-app/controllers/tools/blocks/test/**"
     ]
 
     // TODO Fill in these fields
