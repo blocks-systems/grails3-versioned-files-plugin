@@ -40,7 +40,7 @@ Grails 3 plugin for manage files as attachments with versions.
     def developers = [ [ name: "Filip Grochowski", email: "filip.grochowski@blocks.tools"],[name: "Emil Wesołowski", email:"emil.wesolowski@blocks.tools"]]
 
     // Location of the plugin's issue tracker.
-    def issueManagement = [ system: "JIRA", url: "https://github.com/fgroch/grails3-versioned-files-plugin/issues" ]
+    def issueManagement = [ system: "github", url: "https://github.com/fgroch/grails3-versioned-files-plugin/issues" ]
 
     // Online location of the plugin's browseable source code.
     def scm = [ url: "https://github.com/fgroch/grails3-versioned-files-plugin" ]

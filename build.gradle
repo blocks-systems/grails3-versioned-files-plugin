@@ -22,6 +22,7 @@ apply plugin:"asset-pipeline"
 repositories {
     mavenLocal()
     maven { url "https://repo.grails.org/grails/core" }
+    maven { url "https://dl.bintray.com/fgroch/plugins" }
 }
 
 dependencyManagement {
@@ -54,17 +55,33 @@ dependencies {
     testRuntime "org.seleniumhq.selenium:selenium-htmlunit-driver:2.47.1"
     testRuntime "net.sourceforge.htmlunit:htmlunit:2.18"
 }
+
+bintray {
+    user = 'fgroch'
+    key = System.getenv('BINTRAY_KEY')
+    publications = ['maven']
+    pkg {
+        repo = 'plugins'
+        githubRepo = 'fgroch/grails3-versioned-files-plugin' //Optional Github repository
+        githubReleaseNotesFile = 'README.adoc' //Optional Github readme file
+        name = "grails3-versioned-files-plugin"
+        licenses = ['Apache-2.0']
+        websiteUrl = 'http://grails.org/plugin/grails-versioned-files-plugin'
+        issueTrackerUrl = 'https://github.com/fgroch/grails3-versioned-files-plugin/issues'
+        vcsUrl = 'https://github.com/fgroch/grails3-versioned-files-plugin.git'
+    }
+}
+
 grailsPublish {
-    // TODO: Provide values here
     user = 'user'
     key = 'key'
-    githubSlug = 'foo/bar'
+    githubSlug = 'fgroch/grails3-versioned-files-plugin'
     license {
         name = 'Apache-2.0'
     }
-    title = "My Plugin"
-    desc = "Full plugin description"
-    developers = [johndoe:"John Doe"]
+    title = "Grails3 Versioned Files Plugin"
+    desc = "The Grails 3 Versioned Files plugin adds support to attach files to domain models"
+    developers = [fgroch:"Filip Grochowski", ewesolowski:"Emil Wesołowski"]
     portalUser = ""
     portalPassword = ""    
 }
