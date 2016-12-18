@@ -1,6 +1,7 @@
 package tools.blocks
 
 import grails.converters.JSON
+import grails.util.Holders
 
 import javax.servlet.http.HttpServletResponse
 import java.nio.file.Files
@@ -22,6 +23,8 @@ class AnnexableController {
                 annex = Annex.get(params.uploadAnnexId)
             } else {//create new annex
                 annex = new Annex()
+                annex.createdBy = resolveUserName()
+                annex.createdAt = new Date()
                 if (params.uploadFile.filename?.contains('.')) {
                     int idx = params.uploadFile.filename.lastIndexOf('.')
                     annex.fileName = params.uploadFile.filename.substring(0, idx)
@@ -33,6 +36,8 @@ class AnnexableController {
                     annex.bucket = params.uploadBucket
                 }
             }
+            annex.editedBy = resolveUserName()
+            annex.editedAt = new Date()
             //ADD CONTENT TYPE FROM Apache Tika
             annex.save flush:true//must be saved for new version of domain object
             annex.file = params.uploadFile
@@ -93,5 +98,19 @@ class AnnexableController {
             return
         }
         response.status = HttpServletResponse.SC_NOT_FOUND
+    }
+
+    private String resolveUserName() {
+        String userName = 'SYSTEM'
+        def userConfig = Holders.config?.annexable?.userName
+        if (userConfig instanceof Closure) {
+            userConfig.delegate = this
+            userConfig.resolveStrategy = Closure.DELEGATE_ONLY
+            userName = userConfig.call()
+        }
+        if (userConfig instanceof String) {
+            userName = userConfig
+        }
+        userName
     }
 }
