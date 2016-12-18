@@ -35,7 +35,13 @@ You only need to set these properties in application.yml or application.groovy:
 annexable:
     repositoryPath: /home/user_name/annexable_docs
     bucket: test
+    userName: user_name
 ----
+
+=== where:
+* `repositoryPath` - path to the directory in file system
+* `bucket` - name of directory associated with the application where files will be stored
+* `userName` - it can be userName as String or Closure returning user name as String
 
 == Usage
 To enable Annexable interface you have two options, static property:
@@ -267,7 +273,9 @@ Tag for detach Annex from domain model.
 * 0.1.0 - first release with complete set of methods, controller enhance trait, service and files operations helper.
 
 === Roadmap
+* Version 0.1.1:
+** `Created by` and `Edited by` fields handling
+
 * Version 0.2.0:
 ** Non bootstrap tags
-** User access handling
 ** Bucket per domain (configurable)
