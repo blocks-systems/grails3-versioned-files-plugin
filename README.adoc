@@ -270,11 +270,12 @@ Tag for detach Annex from domain model.
 == History
 
 === Versions:
-* 0.1.0 - first release with complete set of methods, controller enhance trait, service and files operations helper.
+* 0.1.0
+** First release with complete set of methods, controller enhance trait, service and files operations helper.
+* 0.1.1:
+** `Created by` and `Edited by` fields handling
 
 === Roadmap
-* Version 0.1.1:
-** `Created by` and `Edited by` fields handling
 
 * Version 0.2.0:
 ** Non bootstrap tags
