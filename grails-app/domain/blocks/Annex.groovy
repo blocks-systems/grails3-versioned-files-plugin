@@ -1,4 +1,6 @@
-package tools.blocks
+package blocks
+
+import blocks.AnnexableDomain
 
 class Annex {
 

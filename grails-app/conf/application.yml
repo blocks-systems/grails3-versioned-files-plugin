@@ -2,7 +2,7 @@
 grails:
     profile: web-plugin
     codegen:
-        defaultPackage: tools.blocks
+        defaultPackage: blocks
     spring:
         transactionManagement:
             proxies: false

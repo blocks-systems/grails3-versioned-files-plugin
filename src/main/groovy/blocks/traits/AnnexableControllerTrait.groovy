@@ -1,21 +1,34 @@
-package tools.blocks
+package blocks.traits
 
+import grails.artefact.Enhances
 import grails.converters.JSON
 import grails.util.Holders
+import grails.web.Action
+import org.grails.core.artefact.ControllerArtefactHandler
+import blocks.Annex
+import blocks.AnnexableDomain
+import blocks.AnnexableService
+import blocks.exceptions.InsufficientParamsException
+import blocks.exceptions.NoFileToUploadException
 
 import javax.servlet.http.HttpServletResponse
 import java.nio.file.Files
 
-class AnnexableController {
+/**
+ * Created by fgroch on 10.12.16.
+ */
+@Enhances(ControllerArtefactHandler.TYPE)
+trait AnnexableControllerTrait {
+    AnnexableService annexableService;
 
-    def annexableService
-
-    def find() {
+    @Action
+    def findAnnex() {
         String namePart = params.remove('namePart')
         String bucket = params.remove('bucket')
         render annexableService.find(namePart, bucket, params) as JSON
     }
 
+    @Action
     def uploadAnnex() {
         if (params.uploadFile) { //OK, file uploaded
             Annex annex
@@ -52,10 +65,13 @@ class AnnexableController {
             }
             annex.save flush:true//size and content type could be changed
             render message(code: 'default.annex.uploaded',default: 'Annex uploaded sucefully')
+        } else {
+            throw new NoFileToUploadException()
         }
         response.status = HttpServletResponse.SC_NO_CONTENT
     }
 
+    @Action
     def attachAnnex() {
         if(annexableService.attach(params.domainName, params.domainId as Long, params.annexId as Long)) {
             render message(code: 'default.annex.attached',default: 'Annex attached sucefully')
@@ -64,7 +80,8 @@ class AnnexableController {
         }
     }
 
-    def detachAnnex() {
+    @Action
+    def detachAnnex(def domainObject) {
         if (annexableService.detach(params.domainName, params.domainId as Long, params.annexId as Long)) {
             render message(code: 'default.annex.detached',default: 'Annex detached sucefully')
         } else {
@@ -72,13 +89,18 @@ class AnnexableController {
         }
     }
 
+    @Action
     def showAnnex() {
         params.inline = params.inline ?: ''
         params.withContentType = params.withContentType?: ''
         forward(action:'downloadAnnex', params:params)
     }
 
+    @Action
     def downloadAnnex() {
+        if (!params.annexId) {
+            throw new InsufficientParamsException()
+        }
         Annex annex = Annex.get(params.annexId)
         def file = annexableService.downloadAnnexFile(annex, params.version as Long)
         if (file) {

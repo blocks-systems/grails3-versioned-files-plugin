@@ -1,10 +1,10 @@
-package tools.blocks
+package blocks
 
 import grails.transaction.Transactional
 import org.apache.commons.logging.LogFactory
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest.StandardMultipartFile
-import tools.blocks.exceptions.EmptyDomainObjectException
-import tools.blocks.exceptions.InsufficientParamsException
+import blocks.exceptions.EmptyDomainObjectException
+import blocks.exceptions.InsufficientParamsException
 
 @Transactional
 class AnnexableService {

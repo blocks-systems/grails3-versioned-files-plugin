@@ -1,7 +1,7 @@
-package tools.blocks.test
+package blocks.test
 
 import grails.converters.JSON
-import tools.blocks.Annex
+import blocks.Annex
 
 import javax.servlet.http.HttpServletResponse
 import java.nio.file.Files

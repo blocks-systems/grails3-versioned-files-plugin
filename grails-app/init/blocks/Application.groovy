@@ -1,4 +1,4 @@
-package tools.blocks
+package blocks
 
 import grails.boot.*
 import grails.boot.config.GrailsAutoConfiguration

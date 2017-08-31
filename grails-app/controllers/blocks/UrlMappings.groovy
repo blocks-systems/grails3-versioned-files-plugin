@@ -1,4 +1,4 @@
-package tools.blocks
+package blocks
 
 class UrlMappings {
 

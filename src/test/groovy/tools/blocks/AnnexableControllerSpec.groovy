@@ -1,5 +1,6 @@
 package tools.blocks
 
+import blocks.AnnexableController
 import grails.test.mixin.TestFor
 import spock.lang.Specification
 

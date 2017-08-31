@@ -1,34 +1,21 @@
-package tools.blocks.traits
+package blocks
 
-import grails.artefact.Enhances
 import grails.converters.JSON
 import grails.util.Holders
-import grails.web.Action
-import org.grails.core.artefact.ControllerArtefactHandler
-import tools.blocks.Annex
-import tools.blocks.AnnexableDomain
-import tools.blocks.AnnexableService
-import tools.blocks.exceptions.InsufficientParamsException
-import tools.blocks.exceptions.NoFileToUploadException
 
 import javax.servlet.http.HttpServletResponse
 import java.nio.file.Files
 
-/**
- * Created by fgroch on 10.12.16.
- */
-@Enhances(ControllerArtefactHandler.TYPE)
-trait AnnexableControllerTrait {
-    AnnexableService annexableService;
+class AnnexableController {
 
-    @Action
-    def findAnnex() {
+    def annexableService
+
+    def find() {
         String namePart = params.remove('namePart')
         String bucket = params.remove('bucket')
         render annexableService.find(namePart, bucket, params) as JSON
     }
 
-    @Action
     def uploadAnnex() {
         if (params.uploadFile) { //OK, file uploaded
             Annex annex
@@ -65,13 +52,10 @@ trait AnnexableControllerTrait {
             }
             annex.save flush:true//size and content type could be changed
             render message(code: 'default.annex.uploaded',default: 'Annex uploaded sucefully')
-        } else {
-            throw new NoFileToUploadException()
         }
         response.status = HttpServletResponse.SC_NO_CONTENT
     }
 
-    @Action
     def attachAnnex() {
         if(annexableService.attach(params.domainName, params.domainId as Long, params.annexId as Long)) {
             render message(code: 'default.annex.attached',default: 'Annex attached sucefully')
@@ -80,8 +64,7 @@ trait AnnexableControllerTrait {
         }
     }
 
-    @Action
-    def detachAnnex(def domainObject) {
+    def detachAnnex() {
         if (annexableService.detach(params.domainName, params.domainId as Long, params.annexId as Long)) {
             render message(code: 'default.annex.detached',default: 'Annex detached sucefully')
         } else {
@@ -89,18 +72,13 @@ trait AnnexableControllerTrait {
         }
     }
 
-    @Action
     def showAnnex() {
         params.inline = params.inline ?: ''
         params.withContentType = params.withContentType?: ''
         forward(action:'downloadAnnex', params:params)
     }
 
-    @Action
     def downloadAnnex() {
-        if (!params.annexId) {
-            throw new InsufficientParamsException()
-        }
         Annex annex = Annex.get(params.annexId)
         def file = annexableService.downloadAnnexFile(annex, params.version as Long)
         if (file) {

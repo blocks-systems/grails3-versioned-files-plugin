@@ -1,4 +1,4 @@
-package tools.blocks;
+package blocks;
 
 /**
  * Created by fgroch on 27.11.16.

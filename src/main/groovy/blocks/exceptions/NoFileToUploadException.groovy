@@ -1,4 +1,4 @@
-package tools.blocks.exceptions
+package blocks.exceptions
 
 /**
  * Created by floyd on 11.12.16.

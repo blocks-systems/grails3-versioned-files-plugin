@@ -1,13 +1,8 @@
-package tools.blocks
+package blocks
 
 import grails.plugins.*
 import grails.util.GrailsClassUtils
-import org.apache.commons.logging.Log
-import org.apache.commons.logging.LogFactory
 import org.springframework.web.multipart.support.StandardMultipartHttpServletRequest
-
-import javax.servlet.http.HttpServletResponse
-import java.nio.file.Files
 
 class GrailsVersionedFilesPluginGrailsPlugin extends Plugin {
 

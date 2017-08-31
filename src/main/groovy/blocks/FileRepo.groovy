@@ -1,8 +1,8 @@
-package tools.blocks
+package blocks
 
 import grails.util.Holders
 import org.apache.commons.logging.LogFactory
-import tools.blocks.exceptions.UnavailableFileSystemException
+import blocks.exceptions.UnavailableFileSystemException
 
 import java.nio.file.Files
 import java.nio.file.Path
