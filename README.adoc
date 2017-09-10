@@ -277,6 +277,8 @@ Tag for detach Annex from domain model.
 * 0.2.1:
 ** Move to Grails 3.2.11
 ** Package rename
+** New tag
+** Redirect after upload based on params
 
 === Roadmap
 
