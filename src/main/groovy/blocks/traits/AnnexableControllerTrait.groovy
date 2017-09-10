@@ -63,8 +63,16 @@ trait AnnexableControllerTrait {
                 annexableDomain.domainId = params.domainId as Long
                 annex.addToAnnexableDomains(annexableDomain)
             }
+            def redirectUri = ''
+            if (params.redirectController) {
+                redirectUri = createLink(controller: params.redirectController, action: params.redirectAction, id: params.redirectId)
+            }
             annex.save flush:true//size and content type could be changed
-            render message(code: 'default.annex.uploaded',default: 'Annex uploaded sucefully')
+            if (redirectUri != null && redirectUri.size() > 0) {
+                redirect uri:redirectUri
+            } else {
+                render message(code: 'default.annex.uploaded', default: 'Annex uploaded sucefully')
+            }
         } else {
             throw new NoFileToUploadException()
         }
@@ -81,7 +89,7 @@ trait AnnexableControllerTrait {
     }
 
     @Action
-    def detachAnnex(def domainObject) {
+    def detachAnnex() {
         if (annexableService.detach(params.domainName, params.domainId as Long, params.annexId as Long)) {
             render message(code: 'default.annex.detached',default: 'Annex detached sucefully')
         } else {

@@ -8,7 +8,7 @@ class Annex {
     Date createdAt = new Date()
     String editedBy = 'SYSTEM'
     Date editedAt = new Date()
-    boolean isDeleted = false
+    Boolean isDeleted = false
     String fileName
     String extension
     String bucket

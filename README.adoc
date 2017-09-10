@@ -274,9 +274,12 @@ Tag for detach Annex from domain model.
 ** First release with complete set of methods, controller enhance trait, service and files operations helper.
 * 0.1.1:
 ** `Created by` and `Edited by` fields handling
+* 0.2.1:
+** Move to Grails 3.2.11
+** Package rename
 
 === Roadmap
 
-* Version 0.2.0:
+* Version 0.3.0:
 ** Non bootstrap tags
 ** Bucket per domain (configurable)

@@ -51,7 +51,7 @@ class AnnexableController {
                 annex.addToAnnexableDomains(annexableDomain)
             }
             annex.save flush:true//size and content type could be changed
-            render message(code: 'default.annex.uploaded',default: 'Annex uploaded sucefully')
+            render message(code: 'default.annex.uploaded', default: 'Annex uploaded sucefully')
         }
         response.status = HttpServletResponse.SC_NO_CONTENT
     }

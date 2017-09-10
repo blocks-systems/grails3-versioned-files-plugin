@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <meta name="layout" content="main"/>
+    <meta name="layout" content="gvfp"/>
     <title>Welcome to Grails</title>
 
     <asset:link rel="icon" href="favicon.ico" type="image/x-ico" />
@@ -185,17 +185,6 @@
             whatever content you may choose. Below is a list of controllers that are currently deployed in
             this application, click on each to execute its default action:
         </p>
-
-        <div id="controllers" role="navigation">
-            <h2>Available Controllers:</h2>
-            <ul>
-                <g:each var="c" in="${grailsApplication.controllerClasses.sort { it.fullName } }">
-                    <li class="controller">
-                        <g:link controller="${c.logicalPropertyName}">${c.fullName}</g:link>
-                    </li>
-                </g:each>
-            </ul>
-        </div>
     </section>
 
 </div>
@@ -265,11 +254,11 @@
                                     </span>
                                 </button>
                                 <ul id="downloadAnnexDropdown" class="dropdown-menu" >
-                                    %{--<li>
+                                    <li>
                                         <a href="/repository/downloadAnnexFile?annexId=1&amp;versionToDownload=0">
                                             Version 1
                                         </a>
-                                    </li>--}%
+                                    </li>
                                 </ul>
                             </div>
                             <p>
