@@ -36,11 +36,14 @@ class AnnexableTagLib {
 
     def annexesDomainMiniPanel = { attrs, body ->
         def bean = attrs.remove('bean')
-        def bucket = attrs.remove('bucket')
+        def bucket = attrs.remove('bucket') ?: 'default'
         def controller = attrs.remove('controller') ?: 'annexable'
         def redirectController = attrs.remove('redirectController')
         def redirectAction = attrs.remove('redirectAction')
         def redirectId = attrs.remove('redirectId')
+        def uploadAnnexLink = g.createLink(controller: "${controller}", action: 'uploadAnnex')
+        def showAnnexSimpleLink = g.createLink(controller: "${controller}", action: 'showAnnex')
+        def attachAnnexSimpleLink = g.createLink(controller: "${controller}", action: 'attachAnnex')
         if (redirectController != null) {
             redirectController = "<input id='redirectController' type='hidden' value='${redirectController}' name='redirectController'>"
         }
@@ -60,7 +63,7 @@ class AnnexableTagLib {
             sb.append("<div class='row' style='padding-bottom:20px;'>")
             sb.append("<div class='col-lg-4'>")
 
-            sb.append("<form id='uploadNewForm' class='MultiFile-intercepted annex-upload-inline' enctype='multipart/form-data' name='uploadNewForm' method='post' action='/${controller}/uploadAnnex' style='display: initial;'>")
+            sb.append("<form id='uploadNewForm${bucket}' class='MultiFile-intercepted annex-upload-inline' enctype='multipart/form-data' name='uploadNewForm${bucket}' method='post' action='${uploadAnnexLink}' style='display: initial;'>")
             sb.append("<input id='uploadBucket' type='hidden' value='${bucket}' name='uploadBucket'>")
             sb.append("<input id='domainName' type='hidden' value='${bean.class.name}' name='domainName'>")
             sb.append("<input id='domainId' type='hidden' value='${bean.ident()}' name='domainId'>")
@@ -70,7 +73,7 @@ class AnnexableTagLib {
             sb.append("<label class='btn btn-default btn-file'>")
             sb.append(g.message(code: "addNewAnnex", default: "Add new annex")).append("  ")
             sb.append("<span class='fa fa-plus'>")
-            sb.append("<input class='upload-new-input' type='file' name='uploadFile' id='uploadFile' style='display: none;'>")
+            sb.append("<input class='upload-new-input-${bucket}' type='file' name='uploadFile' id='uploadFile' style='display: none;'>")
             sb.append("</span>")
             sb.append("</label>")
             sb.append("</form>")
@@ -81,7 +84,7 @@ class AnnexableTagLib {
 
             sb.append("<div class='row'>")
             sb.append("<div class='col-lg-6'>")
-            bean?.getAnnexes()?.each { annex ->
+            bean?.getAnnexes()?.findAll{ it -> it.bucket == bucket }.each { annex ->
                 def annexLink = g.createLink(controller: "${controller}", action: 'showAnnex', params: ['annexId': annex.id])
 
                 def detachLink = g.createLink(controller: "${controller}", action: 'detachAnnex', params: ['annexId': annex.id, 'domainName': bean.class.name, 'domainId': bean.ident()])
@@ -119,7 +122,7 @@ class AnnexableTagLib {
                 }
                 sb.append("</ul>")
                 sb.append("</div>")
-                sb.append("<a class='btn btn-default' href='#' onClick='showAnnex(${annex.id})'><span class='fa fa-eye'></span></a>")
+                sb.append("<a class='btn btn-default' href='#' onClick='showAnnex${bucket}(${annex.id})'><span class='fa fa-eye'></span></a>")
                 sb.append("<a class='btn btn-default' href='${detachLink}'><span class='fa fa-unlink'></span></a>")
 
                 sb.append("<form id='uploadForm_${annex.id}' class='MultiFile-intercepted annex-upload-inline' enctype='multipart/form-data' name='uploadForm_${annex.id}' method='post' action='/${controller}/uploadAnnex' style='display: initial;'>")
@@ -150,20 +153,21 @@ class AnnexableTagLib {
             }
             sb.append("</div>")
             sb.append("<div class='col-lg-6 annex-preview'>")
-            sb.append("<iframe src='' style='height:425px; width:100%;' frameborder='0' id='showAnnexiFrame' name='showAnnexiFrame'></iframe>")
+            sb.append("<iframe src='' style='height:425px; width:100%;' frameborder='0' id='showAnnexiFrame${bucket}' name='showAnnexiFrame${bucket}'></iframe>")
             sb.append("</div>")
             sb.append("</div>")
             sb.append("</div>")
 
             sb.append("<script>")
             sb.append("\$(document).ready(function () {")
-            sb.append("\$('.upload-new-input').on('change', function () {")
-            sb.append("\$('#uploadNewForm').submit();")
+            sb.append("\$('.upload-new-input-${bucket}').on('change', function () {")
+            sb.append("\$('#uploadNewForm${bucket}').submit();")
             sb.append("});")
             sb.append("});")
 
-            sb.append("function showAnnex(id) {")
-            sb.append("\$('#showAnnexiFrame').attr('src', '/${controller}/showAnnex?annexId='+id);};")
+            sb.append("function showAnnex${bucket}(id) {")
+            //sb.append("\$('#showAnnexiFrame').attr('src', '/${controller}/showAnnex?annexId='+id);};")
+            sb.append("\$('#showAnnexiFrame${bucket}').attr('src', '${showAnnexSimpleLink}?annexId='+id);};")
             sb.append("function findAnnex() {")
             sb.append("var query = \$('#annexableFindQuery').val();")
             sb.append("\$.ajax({")
@@ -186,7 +190,8 @@ class AnnexableTagLib {
             sb.append("function setAttachLink(id, fileName) {")
             sb.append("\$('#annexToAttach').text(fileName);")
             sb.append("\$('#annexToAttach').prepend(\"<span class='fa fa-link'></span> \");")
-            sb.append("\$('#annexToAttach').attr('href', '/${controller}/attachAnnex?domainName=${bean.class.name}&domainId=${bean.id}&annexId='+id);};")
+            //sb.append("\$('#annexToAttach').attr('href', '/${controller}/attachAnnex?domainName=${bean.class.name}&domainId=${bean.id}&annexId='+id);};")
+            sb.append("\$('#annexToAttach').attr('href', '${attachAnnexSimpleLink}?domainName=${bean.class.name}&domainId=${bean.id}&annexId='+id);};")
             sb.append("</script>")
 
             out << sb.toString()

@@ -278,7 +278,9 @@ Tag for detach Annex from domain model.
 ** Move to Grails 3.2.11
 ** Package rename
 ** New tag
-** Redirect after upload based on params
+* 0.2.2:
+** Allow multiple annexesMiniDomainPanel tag (one per bucket)
+** Fixes related to application contextPath
 
 === Roadmap
 
