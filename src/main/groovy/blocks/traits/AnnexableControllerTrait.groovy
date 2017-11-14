@@ -4,6 +4,7 @@ import grails.artefact.Enhances
 import grails.converters.JSON
 import grails.util.Holders
 import grails.web.Action
+import org.apache.commons.logging.LogFactory
 import org.grails.core.artefact.ControllerArtefactHandler
 import blocks.Annex
 import blocks.AnnexableDomain
@@ -20,6 +21,7 @@ import java.nio.file.Files
 @Enhances(ControllerArtefactHandler.TYPE)
 trait AnnexableControllerTrait {
     AnnexableService annexableService;
+    private static final log = LogFactory.getLog(this)
 
     @Action
     def findAnnex() {
@@ -63,13 +65,10 @@ trait AnnexableControllerTrait {
                 annexableDomain.domainId = params.domainId as Long
                 annex.addToAnnexableDomains(annexableDomain)
             }
-            def redirectUri = ''
-            if (params.redirectController) {
-                redirectUri = createLink(controller: params.redirectController, action: params.redirectAction, id: params.redirectId)
-            }
             annex.save flush:true//size and content type could be changed
-            if (redirectUri != null && redirectUri.size() > 0) {
-                redirect uri:redirectUri
+            if (params.redirectController) {
+                flash.message = message(code: 'default.annex.uploaded', default: 'Annex uploaded sucefully')
+                forward(controller: params.redirectController, action: params.redirectAction, id: params.redirectId)
             } else {
                 render message(code: 'default.annex.uploaded', default: 'Annex uploaded sucefully')
             }
@@ -82,6 +81,7 @@ trait AnnexableControllerTrait {
     @Action
     def attachAnnex() {
         if(annexableService.attach(params.domainName, params.domainId as Long, params.annexId as Long)) {
+            flash.message = message(code: 'default.annex.attached',default: 'Annex attached sucefully')
             render message(code: 'default.annex.attached',default: 'Annex attached sucefully')
         } else {
             render message(code: 'error.generic')
@@ -91,7 +91,12 @@ trait AnnexableControllerTrait {
     @Action
     def detachAnnex() {
         if (annexableService.detach(params.domainName, params.domainId as Long, params.annexId as Long)) {
-            render message(code: 'default.annex.detached',default: 'Annex detached sucefully')
+            if (params.redirectController) {
+                flash.message = message(code: 'default.annex.detached',default: 'Annex detached sucefully')
+                redirect(controller: params.redirectController, action: params.redirectAction, id: params.redirectId)
+            } else {
+                render message(code: 'default.annex.detached',default: 'Annex detached sucefully')
+            }
         } else {
             render message(code: 'error.generic')
         }

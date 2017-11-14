@@ -41,17 +41,20 @@ class AnnexableTagLib {
         def redirectController = attrs.remove('redirectController')
         def redirectAction = attrs.remove('redirectAction')
         def redirectId = attrs.remove('redirectId')
+        def redirectControllerInput = ''
+        def redirectActionInput = ''
+        def redirectIdInput = ''
         def uploadAnnexLink = g.createLink(controller: "${controller}", action: 'uploadAnnex')
         def showAnnexSimpleLink = g.createLink(controller: "${controller}", action: 'showAnnex')
         def attachAnnexSimpleLink = g.createLink(controller: "${controller}", action: 'attachAnnex')
         if (redirectController != null) {
-            redirectController = "<input id='redirectController' type='hidden' value='${redirectController}' name='redirectController'>"
+            redirectControllerInput = "<input id='redirectController' type='hidden' value='${redirectController}' name='redirectController'>"
         }
         if (redirectAction != null){
-            redirectAction = "<input id='redirectAction' type='hidden' value='${redirectAction}' name='redirectAction'>"
+            redirectActionInput = "<input id='redirectAction' type='hidden' value='${redirectAction}' name='redirectAction'>"
         }
         if (redirectId != null) {
-            redirectId = "<input id='redirectId' type='hidden' value='${redirectId}' name='redirectId'>"
+            redirectIdInput = "<input id='redirectId' type='hidden' value='${redirectId}' name='redirectId'>"
         }
 
         if (bean?.metaClass?.hasProperty(bean, 'annexes') != null) {
@@ -67,9 +70,9 @@ class AnnexableTagLib {
             sb.append("<input id='uploadBucket' type='hidden' value='${bucket}' name='uploadBucket'>")
             sb.append("<input id='domainName' type='hidden' value='${bean.class.name}' name='domainName'>")
             sb.append("<input id='domainId' type='hidden' value='${bean.ident()}' name='domainId'>")
-            sb.append(redirectController)
-            sb.append(redirectAction)
-            sb.append(redirectId)
+            sb.append(redirectControllerInput)
+            sb.append(redirectActionInput)
+            sb.append(redirectIdInput)
             sb.append("<label class='btn btn-default btn-file'>")
             sb.append(g.message(code: "addNewAnnex", default: "Add new annex")).append("  ")
             sb.append("<span class='fa fa-plus'>")
@@ -87,7 +90,10 @@ class AnnexableTagLib {
             bean?.getAnnexes()?.findAll{ it -> it.bucket == bucket }.each { annex ->
                 def annexLink = g.createLink(controller: "${controller}", action: 'showAnnex', params: ['annexId': annex.id])
 
-                def detachLink = g.createLink(controller: "${controller}", action: 'detachAnnex', params: ['annexId': annex.id, 'domainName': bean.class.name, 'domainId': bean.ident()])
+                def detachLink = g.createLink(controller: "${controller}", action: 'detachAnnex', params: [
+                        'annexId': annex.id, 'domainName': bean.class.name, 'domainId': bean.ident(),
+                        'redirectController':redirectController, 'redirectAction': redirectAction, 'redirectId':redirectId
+                ])
                 sb.append("<div class='col-lg-6 annex-thumbnail'>")
                 sb.append("<div class='annex-domain-panel' style='background-color:#cccccc;'>")
                 sb.append("<div style='margin-top:20px;'>")
@@ -128,9 +134,9 @@ class AnnexableTagLib {
                 sb.append("<form id='uploadForm_${annex.id}' class='MultiFile-intercepted annex-upload-inline' enctype='multipart/form-data' name='uploadForm_${annex.id}' method='post' action='/${controller}/uploadAnnex' style='display: initial;'>")
                 sb.append("<input id='uploadAnnexId' type='hidden' value='${annex.id}' name='uploadAnnexId'>")
                 sb.append("<input id='uploadBucket' type='hidden' value='${bucket}' name='uploadBucket'>")
-                sb.append(redirectController)
-                sb.append(redirectAction)
-                sb.append(redirectId)
+                sb.append(redirectControllerInput)
+                sb.append(redirectActionInput)
+                sb.append(redirectIdInput)
                 sb.append("<label class='btn btn-default btn-file'>")
                 sb.append("<span class='fa fa-upload'>")
                 sb.append("<input class='upload-input_${annex.id}' type='file' name='uploadFile' id='uploadFile' style='display: none;'>")
@@ -162,6 +168,7 @@ class AnnexableTagLib {
             sb.append("\$(document).ready(function () {")
             sb.append("\$('.upload-new-input-${bucket}').on('change', function () {")
             sb.append("\$('#uploadNewForm${bucket}').submit();")
+            //sb.append("location.reload();")
             sb.append("});")
             sb.append("});")
 
@@ -184,7 +191,7 @@ class AnnexableTagLib {
             sb.append("\$('#annexToAttachFoundedCount').text(data.length);")
             sb.append("},")
             sb.append("error: function (request, status, error) {")
-            sb.append("alert(error)")
+            sb.append("alert(error);")
             sb.append("},")
             sb.append("complete: function () {}});};")
             sb.append("function setAttachLink(id, fileName) {")
