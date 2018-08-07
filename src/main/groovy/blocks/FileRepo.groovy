@@ -7,6 +7,7 @@ import blocks.exceptions.UnavailableFileSystemException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.nio.file.StandardCopyOption
 import java.nio.file.StandardOpenOption
 
 /**
@@ -60,6 +61,10 @@ class FileRepo {
         trashDir = trashPath
     }
 
+    protected static def uploadFile(Annex annex, Map params=[:]) {
+        uploadFile(annex, params, false)
+    }
+
     /**
      *
      * @param annex Annex data to upload
@@ -67,7 +72,7 @@ class FileRepo {
      * If not present data will should exists in annex object
      * @return changed annex object
      */
-    protected static def uploadFile(Annex annex, Map params=[:]) {
+    protected static def uploadFile(Annex annex, Map params=[:], boolean copyFile) {
         if (!isInitialized()) {
             init()
         }
@@ -83,8 +88,15 @@ class FileRepo {
         params.annexId = params.annexId ?: annex.id
         params.file = params.file ?: annex.file
         //params.version = params.version ?: 0
-        annex.contentType = params.file.contentType
-        Long fileSize = saveFileToRepo(params)
+        if (!annex.contentType && params?.file?.contentType) {
+            annex.contentType = params.file.contentType
+        }
+        Long fileSize = 0
+        if (copyFile) {
+            fileSize = copyFileToRepo(params)
+        } else {
+            fileSize = saveFileToRepo(params)
+        }
         annex.length = fileSize
         annex
     }
@@ -159,6 +171,26 @@ class FileRepo {
             out.write(f.bytes, 0, f.bytes.length);
         } catch (IOException e) {
             log.error(e)
+            throw e
+        }
+        file.toFile().length()
+    }
+
+    private static Long copyFileToRepo(Map params) {
+        String diskFileName = "${params.annexId}" + VERSION_SEPARTOR + "${params.version}"
+        Path filePath = Paths.get(repoDir.toString(), params.bucket)
+        if (Files.notExists(filePath)) {
+            filePath = Files.createDirectory(filePath)
+        }
+        Path file = Paths.get(filePath.toString(), diskFileName)
+        def f = params.file
+        file = Files.createFile(file)
+
+        try {
+            Files.copy(f.toPath(), file, StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            log.error(e)
+            throw e
         }
         file.toFile().length()
     }

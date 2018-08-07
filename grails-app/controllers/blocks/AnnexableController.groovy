@@ -8,7 +8,7 @@ import java.nio.file.Files
 
 class AnnexableController {
 
-    def annexableService
+    AnnexableService annexableService
 
     def find() {
         String namePart = params.remove('namePart')

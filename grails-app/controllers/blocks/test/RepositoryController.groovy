@@ -1,5 +1,6 @@
 package blocks.test
 
+import blocks.AnnexableService
 import grails.converters.JSON
 import blocks.Annex
 
@@ -8,7 +9,7 @@ import java.nio.file.Files
 
 class RepositoryController {
 
-    def annexableService
+    AnnexableService annexableService
 
     def index() {
         def buckets = annexableService.annexesGroupByBucket

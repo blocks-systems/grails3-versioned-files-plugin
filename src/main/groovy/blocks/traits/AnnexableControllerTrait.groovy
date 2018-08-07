@@ -20,7 +20,7 @@ import java.nio.file.Files
  */
 @Enhances(ControllerArtefactHandler.TYPE)
 trait AnnexableControllerTrait {
-    AnnexableService annexableService;
+    AnnexableService annexableService
     private static final log = LogFactory.getLog(this)
 
     @Action

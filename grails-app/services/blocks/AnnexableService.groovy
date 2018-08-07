@@ -188,6 +188,13 @@ class AnnexableService {
         annex
     }
 
+    def add(Annex annex, boolean copyLocalFile) {
+        if (annex.file) {
+            annex = FileRepo.uploadFile(annex, [:], copyLocalFile)
+        }
+        return annex
+    }
+
     def add(def file, def domainObject) {
         if (!domainObject) {
             throw new EmptyDomainObjectException()
